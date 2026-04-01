@@ -1,0 +1,13 @@
+﻿{
+  // 让 VS Code 知道这是一个 JavaScript 项目，并识别路径别名。
+  "compilerOptions": {
+    // 以项目根目录作为路径解析基准。
+    "baseUrl": ".",
+
+    // 配置 @ 指向 src，和 vite.config.js 保持一致。
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

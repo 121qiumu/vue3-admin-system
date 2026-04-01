@@ -1,0 +1,43 @@
+﻿/* 默认主题
+ * 默认主题会同时挂在 :root 和 html[data-theme='default'] 上。
+ * 这样就算项目第一次打开时还没有主动设置 data-theme，
+ * 页面也能拿到一套完整的默认主题变量。
+ */
+
+:root,
+html[data-theme='default'] {
+  /* 品牌色 */
+  --app-color-primary: #409eff;
+  --app-color-success: #67c23a;
+  --app-color-warning: #e6a23c;
+  --app-color-danger: #f56c6c;
+  --app-color-info: #909399;
+
+  /* 页面与容器背景 */
+  --app-color-bg-page: #f5f7fa;
+  --app-color-bg-container: #ffffff;
+  --app-color-bg-elevated: #ffffff;
+  --app-color-bg-overlay: rgba(255, 255, 255, 0.92);
+
+  /* 文本颜色 */
+  --app-color-text-primary: #303133;
+  --app-color-text-regular: #606266;
+  --app-color-text-secondary: #909399;
+  --app-color-text-placeholder: #a8abb2;
+
+  /* 边框颜色 */
+  --app-color-border-base: #dcdfe6;
+  --app-color-border-light: #e4e7ed;
+  --app-color-border-lighter: #ebeef5;
+
+  /* 特殊区域 */
+  --app-color-sidebar-bg: #001529;
+  --app-color-sidebar-text: rgba(255, 255, 255, 0.85);
+  --app-color-sidebar-active-bg: #1677ff;
+  --app-color-sidebar-active-text: #ffffff;
+  --app-color-header-bg: #ffffff;
+  --app-color-header-text: #303133;
+
+  /* 状态与辅助色 */
+  --app-color-mask: rgba(0, 0, 0, 0.45);
+}

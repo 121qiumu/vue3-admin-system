@@ -1,0 +1,55 @@
+﻿/* 全局基础重置样式
+ * 这一层不负责主题颜色定义，只负责统一默认表现。
+ * 颜色、背景、边框等主题相关内容，统一交给 CSS Variables 管理。
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* 让浏览器原生滚动、表单等组件尽量跟着当前亮暗模式走。 */
+  color-scheme: light;
+}
+
+body {
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: var(--app-font-size-base);
+  color: var(--app-color-text-primary);
+  background-color: var(--app-color-bg-page);
+  transition:
+    background-color var(--app-transition-duration) var(--app-transition-timing),
+    color var(--app-transition-duration) var(--app-transition-timing);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+#app {
+  background-color: var(--app-color-bg-page);
+}

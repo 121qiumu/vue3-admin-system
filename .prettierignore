@@ -1,0 +1,6 @@
+﻿# Prettier 忽略文件
+# 这些通常是编译产物、依赖目录或自动生成文件，不需要手动格式化。
+
+dist
+node_modules
+pnpm-lock.yaml

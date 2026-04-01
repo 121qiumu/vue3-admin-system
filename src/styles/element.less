@@ -1,0 +1,53 @@
+﻿/* Element Plus 变量适配层
+ * 这里的目标不是“重写 Element Plus”，而是把我们的主题变量
+ * 映射到 Element Plus 的核心 CSS Variables 上。
+ *
+ * 这样做有两个好处：
+ * 1. 我们自己的页面样式和 Element Plus 组件视觉风格更统一
+ * 2. 以后新增主题时，不需要到处单独覆盖 Element Plus 组件样式
+ */
+
+html {
+  /* 主题主色 */
+  --el-color-primary: var(--app-color-primary);
+  --el-color-success: var(--app-color-success);
+  --el-color-warning: var(--app-color-warning);
+  --el-color-danger: var(--app-color-danger);
+  --el-color-info: var(--app-color-info);
+
+  /* 文本颜色 */
+  --el-text-color-primary: var(--app-color-text-primary);
+  --el-text-color-regular: var(--app-color-text-regular);
+  --el-text-color-secondary: var(--app-color-text-secondary);
+  --el-text-color-placeholder: var(--app-color-text-placeholder);
+
+  /* 背景颜色 */
+  --el-bg-color: var(--app-color-bg-container);
+  --el-bg-color-page: var(--app-color-bg-page);
+  --el-fill-color-blank: var(--app-color-bg-container);
+
+  /* 边框颜色 */
+  --el-border-color: var(--app-color-border-base);
+  --el-border-color-light: var(--app-color-border-light);
+  --el-border-color-lighter: var(--app-color-border-lighter);
+
+  /* 圆角和阴影 */
+  --el-border-radius-base: var(--app-radius-base);
+  --el-box-shadow-light: var(--app-shadow-sm);
+  --el-box-shadow: var(--app-shadow-base);
+
+  /* 遮罩 */
+  --el-mask-color: rgba(0, 0, 0, 0.5);
+}
+
+.el-card,
+.el-dialog,
+.el-drawer,
+.el-dropdown__popper,
+.el-popper,
+.el-select__popper.el-popper {
+  transition:
+    background-color var(--app-transition-duration) var(--app-transition-timing),
+    border-color var(--app-transition-duration) var(--app-transition-timing),
+    color var(--app-transition-duration) var(--app-transition-timing);
+}

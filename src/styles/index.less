@@ -1,0 +1,16 @@
+/* 全局样式统一入口
+ * 这个文件只负责“组织顺序”，不建议在这里堆太多具体样式。
+ * 推荐顺序如下：
+ * 1. 先加载基础设计令牌，例如间距、圆角、布局尺寸
+ * 2. 再加载主题颜色变量
+ * 3. 再把项目变量映射给 Element Plus
+ * 4. 最后加载重置样式和少量全局公共样式
+ */
+
+@import './variables.less';
+@import './themes/default.less';
+@import './themes/dark.less';
+@import './themes/deep-blue.less';
+@import './element.less';
+@import './reset.less';
+@import './responsive.less';

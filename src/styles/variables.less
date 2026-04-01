@@ -1,0 +1,64 @@
+﻿/* 全局设计令牌
+ * 这个文件主要放“不随主题变化”或者“变化频率较低”的 CSS Variables。
+ * 例如：
+ * 1. 间距
+ * 2. 圆角
+ * 3. 布局尺寸
+ * 4. 阴影
+ * 5. 层级
+ *
+ * 这样做的好处是：
+ * 1. 后续布局系统更容易统一尺寸
+ * 2. 组件之间的间距更加一致
+ * 3. 以后扩展新主题时，只需要重点关心颜色变量
+ */
+
+:root {
+  /* 基础字号 */
+  --app-font-size-extra-small: 12px;
+  --app-font-size-small: 13px;
+  --app-font-size-base: 14px;
+  --app-font-size-medium: 16px;
+  --app-font-size-large: 18px;
+  --app-font-size-extra-large: 20px;
+
+  /* 间距系统 */
+  --app-space-2xs: 4px;
+  --app-space-xs: 8px;
+  --app-space-sm: 12px;
+  --app-space-md: 16px;
+  --app-space-lg: 20px;
+  --app-space-xl: 24px;
+  --app-space-2xl: 32px;
+
+  /* 圆角系统 */
+  --app-radius-small: 4px;
+  --app-radius-base: 8px;
+  --app-radius-large: 12px;
+  --app-radius-round: 999px;
+
+  /* 布局尺寸 */
+  --app-layout-header-height: 56px;
+  --app-layout-sidebar-width: 220px;
+  --app-layout-sidebar-collapse-width: 64px;
+  --app-layout-tags-view-height: 40px;
+  --app-layout-content-padding: 16px;
+
+  /* 阴影 */
+  --app-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.08);
+  --app-shadow-base: 0 6px 18px rgba(15, 23, 42, 0.1);
+  --app-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.14);
+
+  /* 边框 */
+  --app-border-width: 1px;
+
+  /* 层级 */
+  --app-z-index-fixed: 100;
+  --app-z-index-layout: 200;
+  --app-z-index-mask: 900;
+  --app-z-index-modal: 1000;
+
+  /* 过渡动画 */
+  --app-transition-duration: 0.2s;
+  --app-transition-timing: ease;
+}
