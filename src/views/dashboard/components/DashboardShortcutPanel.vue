@@ -3,8 +3,10 @@
     <template #header>
       <div class="dashboard-panel-card__header">
         <div>
-          <div class="dashboard-panel-card__title">快捷入口</div>
-          <div class="dashboard-panel-card__desc">把常用操作放在首页，减少重复找菜单的成本。</div>
+          <div class="dashboard-panel-card__title">{{ t('dashboard.panels.shortcut.title') }}</div>
+          <div class="dashboard-panel-card__desc">
+            {{ t('dashboard.panels.shortcut.description') }}
+          </div>
         </div>
       </div>
     </template>
@@ -13,8 +15,8 @@
       v-if="shortcutList.length === 0"
       type="empty"
       mode="section"
-      title="暂无快捷入口"
-      description="当前角色还没有配置可直接使用的快捷入口。"
+      :title="t('dashboard.panels.shortcut.emptyTitle')"
+      :description="t('dashboard.panels.shortcut.emptyDescription')"
     />
 
     <div v-else class="dashboard-shortcut-panel__grid">
@@ -38,10 +40,12 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
 import AppStatus from '@/components/common/AppStatus.vue'
 
-// 快捷入口组件只负责渲染卡片列表，并把点击事件抛给页面层。
-// 这样“跳路由”还是“执行动作”都由页面统一决定，组件职责会更单纯。
+const { t } = useI18n()
+
 defineProps({
   shortcutList: {
     type: Array,

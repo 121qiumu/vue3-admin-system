@@ -1,0 +1,167 @@
+.app-auth-message.el-message {
+  position: fixed;
+  width: min(560px, calc(100vw - 32px));
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 0;
+  overflow: hidden;
+  color: #e2e8f0;
+  background: linear-gradient(135deg, rgba(8, 21, 38, 0.96) 0%, rgba(15, 23, 42, 0.94) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 24px;
+  box-shadow: 0 24px 64px rgba(2, 8, 23, 0.32);
+  backdrop-filter: blur(18px);
+}
+
+.app-auth-message.el-message::before,
+.app-auth-message.el-message::after {
+  position: absolute;
+  pointer-events: none;
+  content: '';
+}
+
+.app-auth-message.el-message::before {
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.12), transparent 34%);
+  opacity: 0.7;
+}
+
+.app-auth-message.el-message::after {
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.16));
+}
+
+.app-auth-message .el-message__icon,
+.app-auth-message .el-message__closeBtn {
+  display: none;
+}
+
+.app-auth-message .el-message__content {
+  width: 100%;
+  padding: 0;
+  color: inherit;
+  line-height: normal;
+}
+
+.app-auth-message__panel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px 18px;
+}
+
+.app-auth-message__badge {
+  position: relative;
+  display: inline-flex;
+  width: 54px;
+  height: 54px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.app-auth-message__badge::before {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.app-auth-message__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(191, 219, 254, 0.78);
+  text-transform: uppercase;
+}
+
+.app-auth-message__title {
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #ffffff;
+}
+
+.app-auth-message__text {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: rgba(226, 232, 240, 0.84);
+}
+
+.app-auth-message--success {
+  border-color: rgba(34, 197, 94, 0.26);
+}
+
+.app-auth-message--success .app-auth-message__badge {
+  background: linear-gradient(135deg, rgba(21, 128, 61, 0.96), rgba(34, 197, 94, 0.9));
+}
+
+.app-auth-message--success .app-auth-message__badge::before {
+  content: '✓';
+}
+
+.app-auth-message--warning {
+  border-color: rgba(245, 158, 11, 0.28);
+}
+
+.app-auth-message--warning .app-auth-message__badge {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.96), rgba(245, 158, 11, 0.92));
+}
+
+.app-auth-message--warning .app-auth-message__badge::before {
+  content: '!';
+}
+
+.app-auth-message--error {
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.app-auth-message--error .app-auth-message__badge {
+  background: linear-gradient(135deg, rgba(185, 28, 28, 0.96), rgba(239, 68, 68, 0.92));
+}
+
+.app-auth-message--error .app-auth-message__badge::before {
+  content: '×';
+}
+
+.app-auth-message--info {
+  border-color: rgba(56, 189, 248, 0.28);
+}
+
+.app-auth-message--info .app-auth-message__badge {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.96), rgba(56, 189, 248, 0.92));
+}
+
+.app-auth-message--info .app-auth-message__badge::before {
+  content: 'i';
+}
+
+@media (max-width: 768px) {
+  .app-auth-message.el-message {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+    border-radius: 22px;
+  }
+
+  .app-auth-message__panel {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .app-auth-message__badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+
+  .app-auth-message__badge::before {
+    font-size: 18px;
+  }
+}

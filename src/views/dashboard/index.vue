@@ -4,13 +4,13 @@
       <AppStatus
         type="error"
         mode="page"
-        title="首页数据加载失败"
+        :title="t('dashboard.page.loadFailedTitle')"
         :description="loadErrorMessage"
-        tip="你可以点击下面的按钮重新加载工作台数据。"
+        :tip="t('dashboard.page.loadFailedTip')"
       >
         <template #actions>
           <el-button :loading="loading" type="primary" @click="loadDashboardData()">
-            重新加载
+            {{ t('common.actions.reload') }}
           </el-button>
         </template>
       </AppStatus>
@@ -22,10 +22,8 @@
       <section class="dashboard-page__section">
         <div class="dashboard-page__section-header">
           <div>
-            <div class="dashboard-page__section-title">运营概览</div>
-            <div class="dashboard-page__section-desc">
-              首页数据由 mock 接口返回，不同角色会看到不同统计内容。
-            </div>
+            <div class="dashboard-page__section-title">{{ t('dashboard.page.overviewTitle') }}</div>
+            <div class="dashboard-page__section-desc">{{ t('dashboard.page.overviewDesc') }}</div>
           </div>
 
           <el-button
@@ -34,7 +32,7 @@
             plain
             @click="loadDashboardData({ showSuccessMessage: true })"
           >
-            刷新首页
+            {{ t('dashboard.page.refresh') }}
           </el-button>
         </div>
 
@@ -65,10 +63,12 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 
 import { getDashboardDataApi } from '@/api/dashboard'
+import { useLocale } from '@/hooks/useLocale'
 import AppStatus from '@/components/common/AppStatus.vue'
 import { useUserStore } from '@/store/modules/user'
 
@@ -78,14 +78,22 @@ import DashboardShortcutPanel from './components/DashboardShortcutPanel.vue'
 import DashboardStatCard from './components/DashboardStatCard.vue'
 import DashboardWelcomeCard from './components/DashboardWelcomeCard.vue'
 
+const router = useRouter()
+const userStore = useUserStore()
+const { t } = useI18n()
+const { toLocalePath } = useLocale()
+const loading = ref(false)
+const loadErrorMessage = ref('')
+const dashboardData = ref(createEmptyDashboardData())
+
 function createEmptyDashboardData() {
   return {
     welcome: {
-      greeting: '欢迎回来',
-      subtitle: '首页数据加载中，请稍候。',
-      roleLabel: '工作台',
+      greeting: t('common.actions.backHome', {}, '娆㈣繋鍥炴潵'),
+      subtitle: '',
+      roleLabel: '',
       lastLoginAt: '--',
-      workspaceTip: '正在准备今天的工作台信息。',
+      workspaceTip: '',
       focusTagList: [],
       overviewList: []
     },
@@ -96,19 +104,10 @@ function createEmptyDashboardData() {
   }
 }
 
-const router = useRouter()
-const userStore = useUserStore()
-const loading = ref(false)
-const loadErrorMessage = ref('')
-const dashboardData = ref(createEmptyDashboardData())
-
 const displayName = computed(() => {
   return userStore.displayName
 })
 
-// 拉取首页数据。
-// 页面层只关心“拿到数据并渲染”，至于数据来自 mock 还是真实接口，
-// 统一交给 api 层决定。
 async function loadDashboardData(options = {}) {
   const { showSuccessMessage = false } = options
 
@@ -127,23 +126,20 @@ async function loadDashboardData(options = {}) {
     }
 
     if (showSuccessMessage) {
-      ElMessage.success('首页数据已刷新')
+      ElMessage.success(t('dashboard.page.refreshSuccess'))
     }
   } catch (error) {
     dashboardData.value = createEmptyDashboardData()
-    loadErrorMessage.value = error.message || '获取首页数据失败，请稍后重试'
+    loadErrorMessage.value = error.message || t('common.messages.loadFailed')
     ElMessage.error(loadErrorMessage.value)
   } finally {
     loading.value = false
   }
 }
 
-// 首页快捷入口支持两类行为：
-// 1. route：直接跳转已有页面
-// 2. action：先用消息提示模拟真实业务动作
 async function handleShortcutSelect(item = {}) {
   if (item.type === 'route' && item.path) {
-    router.push(item.path)
+    router.push(toLocalePath(item.path))
     return
   }
 
@@ -153,13 +149,13 @@ async function handleShortcutSelect(item = {}) {
   }
 
   const shortcutMessageMap = {
-    'permission-audit': '权限巡检页会在后续业务模块中继续补齐，这里先保留快捷入口。',
-    'publish-notice': '公告管理通常会在系统管理模块继续扩展，这里先用 mock 说明首页结构。',
-    'content-calendar': '内容日历能力当前先做入口预留，后续接真实业务模块时再补页面。',
-    'publish-draft': '待发布稿件页通常属于内容管理模块，这里先保留入口位。'
+    'permission-audit': t('dashboard.shortcutMessages.permissionAudit'),
+    'publish-notice': t('dashboard.shortcutMessages.publishNotice'),
+    'content-calendar': t('dashboard.shortcutMessages.contentCalendar'),
+    'publish-draft': t('dashboard.shortcutMessages.publishDraft')
   }
 
-  ElMessage.info(shortcutMessageMap[item.actionKey] || '该快捷入口当前先做结构预留。')
+  ElMessage.info(shortcutMessageMap[item.actionKey] || t('dashboard.shortcutMessages.placeholder'))
 }
 
 onMounted(() => {

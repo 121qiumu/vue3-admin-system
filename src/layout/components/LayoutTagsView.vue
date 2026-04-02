@@ -20,7 +20,7 @@
 
     <el-dropdown class="layout-tags-view__action" @command="handleCommand">
       <el-button text>
-        标签操作
+        {{ t('layout.tags.actions') }}
         <el-icon class="layout-tags-view__action-icon">
           <IconEpArrowDown />
         </el-icon>
@@ -28,9 +28,13 @@
 
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item command="closeCurrent">关闭当前</el-dropdown-item>
-          <el-dropdown-item command="closeOthers">关闭其他</el-dropdown-item>
-          <el-dropdown-item command="closeAll">关闭全部</el-dropdown-item>
+          <el-dropdown-item command="closeCurrent">{{
+            t('common.actions.closeCurrent')
+          }}</el-dropdown-item>
+          <el-dropdown-item command="closeOthers">{{
+            t('common.actions.closeOthers')
+          }}</el-dropdown-item>
+          <el-dropdown-item command="closeAll">{{ t('common.actions.closeAll') }}</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -39,22 +43,27 @@
 
 <script setup>
 import { computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
+import { useLocale } from '@/hooks/useLocale'
 import { useTagsView } from '@/hooks/useTagsView'
+import { getBaseRoutePath } from '@/locales/resolve'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
+const { language, toLocalePath } = useLocale()
 const {
   visitedViewList,
   addVisitedView,
   removeVisitedView,
   removeOtherViews,
   removeAllViews,
-  findVisitedViewByPath
+  findVisitedViewByPath,
+  refreshVisitedViewTitleList
 } = useTagsView()
 
-// 每次路由切换后，把当前页面同步到标签页列表中。
 watch(
   () => route.fullPath,
   () => {
@@ -65,31 +74,38 @@ watch(
   }
 )
 
+watch(
+  () => language.value,
+  () => {
+    refreshVisitedViewTitleList()
+  }
+)
+
 const currentTag = computed(() => {
   return findVisitedViewByPath(route.path)
 })
 
 function isActiveTag(tag) {
-  return route.path === tag.path
+  return getBaseRoutePath(route.path) === tag.path
 }
 
 function goTag(tag) {
-  router.push(tag.fullPath)
+  router.push(toLocalePath(tag.fullPath || tag.path))
 }
 
 function navigateToFallback(tagList = []) {
   const fallbackTag = tagList[tagList.length - 1]
 
   if (fallbackTag) {
-    router.push(fallbackTag.fullPath)
+    router.push(toLocalePath(fallbackTag.fullPath || fallbackTag.path))
     return
   }
 
-  router.push('/dashboard')
+  router.push(toLocalePath('/dashboard'))
 }
 
 function closeTag(tag) {
-  const isCurrentTag = tag.path === route.path
+  const isCurrentTag = tag.path === getBaseRoutePath(route.path)
   const nextTagList = removeVisitedView(tag)
 
   if (!isCurrentTag) {
@@ -108,7 +124,7 @@ function handleCommand(command) {
 
   if (command === 'closeCurrent') {
     if (activeTag.affix) {
-      router.push(activeTag.fullPath)
+      router.push(toLocalePath(activeTag.fullPath || activeTag.path))
       return
     }
 
@@ -120,18 +136,18 @@ function handleCommand(command) {
   if (command === 'closeOthers') {
     const nextTagList = removeOtherViews(activeTag)
 
-    if (!nextTagList.some((tag) => tag.path === route.path)) {
+    if (!nextTagList.some((tag) => tag.path === getBaseRoutePath(route.path))) {
       navigateToFallback(nextTagList)
       return
     }
 
-    router.push(activeTag.fullPath)
+    router.push(toLocalePath(activeTag.fullPath || activeTag.path))
     return
   }
 
   if (command === 'closeAll') {
     removeAllViews()
-    router.push('/dashboard')
+    router.push(toLocalePath('/dashboard'))
   }
 }
 </script>

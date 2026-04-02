@@ -14,6 +14,7 @@ export function useTagsView() {
     removeOtherViews: tabsStore.removeOtherViews,
     removeAllViews: tabsStore.removeAllViews,
     findVisitedViewByPath: tabsStore.findVisitedViewByPath,
+    refreshVisitedViewTitleList: tabsStore.refreshVisitedViewTitleList,
     resetTabsState: tabsStore.resetTabsState
   }
 }

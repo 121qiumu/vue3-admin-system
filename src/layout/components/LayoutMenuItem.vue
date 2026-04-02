@@ -8,7 +8,7 @@
           :show-fallback="false"
           class="layout-menu-item__icon"
         />
-        <span class="layout-menu-item__text">{{ menu.meta?.title || '未命名菜单' }}</span>
+        <span class="layout-menu-item__text">{{ menuTitle }}</span>
       </div>
     </template>
 
@@ -23,7 +23,7 @@
         :show-fallback="false"
         class="layout-menu-item__icon"
       />
-      <span class="layout-menu-item__text">{{ menu.meta?.title || '未命名菜单' }}</span>
+      <span class="layout-menu-item__text">{{ menuTitle }}</span>
     </div>
   </el-menu-item>
 </template>
@@ -32,6 +32,7 @@
 import { computed } from 'vue'
 
 import AppIcon from '@/components/common/AppIcon.vue'
+import { getMetaTitle } from '@/locales/helper'
 
 defineOptions({
   name: 'LayoutMenuItem'
@@ -44,9 +45,12 @@ const props = defineProps({
   }
 })
 
-// 如果有 children，就按子菜单渲染；否则按普通菜单项渲染。
 const hasChildren = computed(() => {
   return Array.isArray(props.menu.children) && props.menu.children.length > 0
+})
+
+const menuTitle = computed(() => {
+  return getMetaTitle(props.menu.meta, {}) || 'Unnamed Menu'
 })
 </script>
 

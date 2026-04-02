@@ -1,4 +1,4 @@
-﻿// 布局模式常量
+// 布局模式常量
 // 这一层统一管理“后台壳子”相关的固定配置，避免在多个文件里到处手写字符串。
 
 export const LAYOUT_MODE_ENUM = Object.freeze({
@@ -15,7 +15,7 @@ export const DEVICE_TYPE_ENUM = Object.freeze({
 })
 
 // 默认布局模式。
-// 当前第 6 步先实现左侧布局，后续再逐步补顶部布局和混合布局。
+// 当前默认仍然是左侧布局，它也是后台项目里最常见的一种排布方式。
 export const DEFAULT_LAYOUT_MODE = LAYOUT_MODE_ENUM.LEFT
 
 // 移动端判断断点。
@@ -23,21 +23,27 @@ export const DEFAULT_LAYOUT_MODE = LAYOUT_MODE_ENUM.LEFT
 export const LAYOUT_MOBILE_BREAKPOINT = 992
 
 // 布局选项。
-// 后续做布局切换面板时，可以直接复用这份数据。
+// 这里同时保留 i18n key 和兜底文案，方便在 JS 和模板里统一复用。
 export const LAYOUT_MODE_OPTIONS = [
   {
-    label: '左侧布局',
     value: LAYOUT_MODE_ENUM.LEFT,
-    description: '最常见的后台管理布局，菜单在左侧。'
+    labelKey: 'layout.layoutModeOptions.left.label',
+    descriptionKey: 'layout.layoutModeOptions.left.description',
+    fallbackLabel: '左侧布局',
+    fallbackDescription: '最常见的后台管理布局，菜单在左侧。'
   },
   {
-    label: '顶部布局',
     value: LAYOUT_MODE_ENUM.TOP,
-    description: '适合一级菜单较少的系统。'
+    labelKey: 'layout.layoutModeOptions.top.label',
+    descriptionKey: 'layout.layoutModeOptions.top.description',
+    fallbackLabel: '顶部布局',
+    fallbackDescription: '适合一级菜单较少的系统。'
   },
   {
-    label: '混合布局',
     value: LAYOUT_MODE_ENUM.MIX,
-    description: '一级菜单在顶部，二级菜单在左侧。'
+    labelKey: 'layout.layoutModeOptions.mix.label',
+    descriptionKey: 'layout.layoutModeOptions.mix.description',
+    fallbackLabel: '混合布局',
+    fallbackDescription: '一级菜单在顶部，二级菜单在左侧。'
   }
 ]

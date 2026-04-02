@@ -29,10 +29,13 @@
 <script setup>
 import { useRouter } from 'vue-router'
 
+import { useLocale } from '@/hooks/useLocale'
+import { translate } from '@/locales/helper'
+
 const props = defineProps({
   title: {
     type: String,
-    default: '详情页面'
+    default: () => translate('common.actions.detail', {}, '详情页面')
   },
   description: {
     type: String,
@@ -49,12 +52,11 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const { toLocalePath } = useLocale()
 
-// 详情页统一支持“回到列表页”的交互。
-// 如果外部明确传了 backPath，就优先跳指定列表页；否则退回浏览器历史。
 function goBack() {
   if (props.backPath) {
-    router.push(props.backPath)
+    router.push(toLocalePath(props.backPath))
     return
   }
 
@@ -104,8 +106,6 @@ function goBack() {
   gap: var(--app-space-md);
 }
 
-/* 详情页里经常会放描述列表、表格和摘要卡片。
- * 小屏下优先保证内容可滚动，而不是强行压缩。 */
 .detail-page-template__content :deep(.el-descriptions__body),
 .detail-page-template__content :deep(.el-table) {
   overflow-x: auto;

@@ -29,7 +29,7 @@
       <el-popover
         placement="bottom-end"
         trigger="click"
-        :width="420"
+        :width="440"
         :teleported="false"
         popper-class="layout-header__settings-popper"
       >
@@ -42,10 +42,8 @@
             </span>
 
             <span class="layout-header__settings-meta">
-              <span class="layout-header__settings-title">界面设置</span>
-              <span class="layout-header__settings-summary">
-                {{ currentLayoutLabel }} / {{ currentThemeLabel }}
-              </span>
+              <span class="layout-header__settings-title">{{ t('layout.header.settings') }}</span>
+              <span class="layout-header__settings-summary">{{ settingsSummary }}</span>
             </span>
 
             <el-icon class="layout-header__action-icon">
@@ -57,8 +55,8 @@
         <div class="layout-header__settings-panel">
           <section class="layout-header__settings-section">
             <div class="layout-header__section-header">
-              <div class="layout-header__section-title">布局模式</div>
-              <div class="layout-header__section-desc">切换菜单和导航的整体分布方式。</div>
+              <div class="layout-header__section-title">{{ t('layout.header.layoutMode') }}</div>
+              <div class="layout-header__section-desc">{{ t('layout.header.layoutModeDesc') }}</div>
             </div>
 
             <div class="layout-header__option-grid">
@@ -84,10 +82,8 @@
 
           <section class="layout-header__settings-section">
             <div class="layout-header__section-header">
-              <div class="layout-header__section-title">系统主题</div>
-              <div class="layout-header__section-desc">
-                切换后台颜色风格，当前主题会自动持久化。
-              </div>
+              <div class="layout-header__section-title">{{ t('layout.header.theme') }}</div>
+              <div class="layout-header__section-desc">{{ t('layout.header.themeDesc') }}</div>
             </div>
 
             <div class="layout-header__option-grid layout-header__option-grid--theme">
@@ -119,6 +115,33 @@
               </button>
             </div>
           </section>
+
+          <section class="layout-header__settings-section">
+            <div class="layout-header__section-header">
+              <div class="layout-header__section-title">{{ t('layout.header.language') }}</div>
+              <div class="layout-header__section-desc">{{ t('layout.header.languageDesc') }}</div>
+            </div>
+
+            <div class="layout-header__option-grid layout-header__option-grid--locale">
+              <button
+                v-for="item in localeOptions"
+                :key="item.value"
+                type="button"
+                class="layout-header__option-card"
+                :class="{ 'is-active': item.value === language }"
+                :aria-pressed="item.value === language"
+                @click="handleLocaleCommand(item.value)"
+              >
+                <div class="layout-header__option-title-row">
+                  <span class="layout-header__option-title">{{ item.label }}</span>
+                  <el-icon v-if="item.value === language" class="layout-header__option-check">
+                    <IconEpCheck />
+                  </el-icon>
+                </div>
+                <div class="layout-header__option-desc">{{ item.value }}</div>
+              </button>
+            </div>
+          </section>
         </div>
       </el-popover>
 
@@ -143,8 +166,12 @@
 
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="dashboard">返回首页</el-dropdown-item>
-            <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+            <el-dropdown-item command="dashboard">{{
+              t('layout.header.backHome')
+            }}</el-dropdown-item>
+            <el-dropdown-item command="logout" divided>{{
+              t('layout.header.logout')
+            }}</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -153,20 +180,20 @@
 
   <el-dialog
     v-model="logoutDialogVisible"
-    title="退出登录"
+    :title="t('layout.header.logoutDialogTitle')"
     width="420px"
     append-to-body
     :close-on-click-modal="false"
   >
     <div class="layout-header__logout-dialog-text">
-      确认退出当前登录账号吗？退出后会清空当前登录状态，并返回到登录页。
+      {{ t('layout.header.logoutDialogText') }}
     </div>
 
     <template #footer>
       <div class="layout-header__logout-dialog-footer">
-        <el-button @click="logoutDialogVisible = false">取消</el-button>
+        <el-button @click="logoutDialogVisible = false">{{ t('common.actions.cancel') }}</el-button>
         <el-button type="danger" :loading="logoutLoading" @click="handleConfirmLogout">
-          确认退出
+          {{ t('layout.header.confirmLogout') }}
         </el-button>
       </div>
     </template>
@@ -174,14 +201,17 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
 
 import { LAYOUT_MODE_OPTIONS } from '@/constants/layout'
 import { useLayout } from '@/hooks/useLayout'
+import { useLocale } from '@/hooks/useLocale'
 import { useTheme } from '@/hooks/useTheme'
+import { getRoleLabel, getRouteTitle, translate } from '@/locales/helper'
 import { clearPermissionRoutes } from '@/permission'
+import { showAuthMessage } from '@/utils/feedback'
 import { useTabsStore } from '@/store/modules/tabs'
 import { useUserStore } from '@/store/modules/user'
 
@@ -214,32 +244,48 @@ defineEmits(['toggle-sidebar'])
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const userStore = useUserStore()
 const tabsStore = useTabsStore()
 const { layoutMode, setLayoutMode } = useLayout()
 const { theme, themeOptions, setTheme } = useTheme()
+const { language, localeOptions, currentLocaleLabel, changeLocale, toLocalePath } = useLocale()
 const logoutDialogVisible = ref(false)
 const logoutLoading = ref(false)
 
-// 布局选项直接复用常量配置。
-// 这样后续如果新增布局模式，只需要改 constants 和对应布局组件。
-const layoutModeOptions = LAYOUT_MODE_OPTIONS
+const layoutModeOptions = computed(() => {
+  return LAYOUT_MODE_OPTIONS.map((item) => ({
+    ...item,
+    label: translate(item.labelKey, {}, item.fallbackLabel),
+    description: translate(item.descriptionKey, {}, item.fallbackDescription)
+  }))
+})
 
 const pageTitle = computed(() => {
-  return route.meta?.title || '后台管理模板'
+  return getRouteTitle(route) || t('app.title')
 })
 
 const currentLayoutLabel = computed(() => {
-  return layoutModeOptions.find((item) => item.value === layoutMode.value)?.label || '未知布局'
+  return (
+    layoutModeOptions.value.find((item) => item.value === layoutMode.value)?.label ||
+    t('common.messages.unknownLayout')
+  )
 })
 
 const currentThemeLabel = computed(() => {
-  return themeOptions.find((item) => item.value === theme.value)?.label || '未知主题'
+  return (
+    themeOptions.value.find((item) => item.value === theme.value)?.label ||
+    t('common.messages.unknownTheme')
+  )
 })
 
-const displayName = computed(() => {
-  return userStore.displayName
+const settingsSummary = computed(() => {
+  return [currentLayoutLabel.value, currentThemeLabel.value, currentLocaleLabel.value].join(
+    t('layout.header.settingsSummarySeparator')
+  )
 })
+
+const displayName = computed(() => userStore.displayName)
 
 const userInitial = computed(() => {
   return String(displayName.value || 'A')
@@ -249,34 +295,24 @@ const userInitial = computed(() => {
 
 const currentRoleLabel = computed(() => {
   const firstRoleCode = userStore.userInfo.roleCodeList?.[0]
-
-  if (firstRoleCode === 'admin') {
-    return '系统管理员'
-  }
-
-  if (firstRoleCode === 'editor') {
-    return '内容编辑'
-  }
-
-  return '后台用户'
+  return getRoleLabel(firstRoleCode, t('common.roles.backendUser'))
 })
 
-// 切换布局模式。
-// 布局状态已经交给 Pinia 管理，所以这里只需要调 store action。
 function handleLayoutCommand(nextLayoutMode) {
   setLayoutMode(nextLayoutMode)
 }
 
-// 切换主题模式。
-// 主题切换会同步更新 DOM 上的 data-theme，并自动写入本地缓存。
 function handleThemeCommand(nextTheme) {
   setTheme(nextTheme)
 }
 
-// 统一处理右上角用户菜单操作。
+async function handleLocaleCommand(nextLocale) {
+  await changeLocale(nextLocale)
+}
+
 function handleUserCommand(command) {
   if (command === 'dashboard') {
-    router.push('/dashboard')
+    router.push(toLocalePath('/dashboard'))
     return
   }
 
@@ -285,8 +321,6 @@ function handleUserCommand(command) {
   }
 }
 
-// 确认退出登录。
-// 这里优先保证本地状态一定会被清理，再跳回登录页。
 async function handleConfirmLogout() {
   logoutLoading.value = true
   let logoutError = null
@@ -300,15 +334,18 @@ async function handleConfirmLogout() {
   clearPermissionRoutes()
   tabsStore.resetTabsState()
   logoutDialogVisible.value = false
-  await router.replace('/login')
   logoutLoading.value = false
+  await nextTick()
 
-  if (logoutError) {
-    ElMessage.warning('本地登录状态已清理，但服务端退出接口暂未成功。')
-    return
-  }
+  showAuthMessage({
+    type: logoutError ? 'warning' : 'success',
+    title: logoutError
+      ? t('layout.header.logoutWarningTitle')
+      : t('layout.header.logoutSuccessTitle'),
+    message: logoutError ? t('layout.header.logoutWarning') : t('layout.header.logoutSuccess')
+  })
 
-  ElMessage.success('已退出当前账号')
+  await router.replace(toLocalePath('/login'))
 }
 </script>
 
@@ -479,6 +516,10 @@ async function handleConfirmLogout() {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.layout-header__option-grid--locale {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .layout-header__option-card {
   display: grid;
   gap: var(--app-space-xs);
@@ -609,7 +650,8 @@ async function handleConfirmLogout() {
   }
 
   .layout-header__option-grid,
-  .layout-header__option-grid--theme {
+  .layout-header__option-grid--theme,
+  .layout-header__option-grid--locale {
     grid-template-columns: 1fr;
   }
 }

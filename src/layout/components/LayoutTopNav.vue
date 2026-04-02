@@ -14,7 +14,7 @@
           :show-fallback="false"
           class="layout-top-nav__icon"
         />
-        <span class="layout-top-nav__text">{{ item.meta?.title || '未命名菜单' }}</span>
+        <span class="layout-top-nav__text">{{ getMetaTitle(item.meta) || 'Unnamed Menu' }}</span>
       </span>
     </el-menu-item>
   </el-menu>
@@ -24,6 +24,8 @@
 import { useRouter } from 'vue-router'
 
 import AppIcon from '@/components/common/AppIcon.vue'
+import { useLocale } from '@/hooks/useLocale'
+import { getMetaTitle } from '@/locales/helper'
 
 const props = defineProps({
   menuList: {
@@ -37,12 +39,11 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const { toLocalePath } = useLocale()
 
-// 混合布局顶部导航只负责一级菜单。
-// 点击一级菜单后，再由左侧区域展示它对应的二级菜单。
 function handleSelect(path) {
   const targetPath = props.menuList.find((item) => item.path === path)?.path || path
-  router.push(targetPath)
+  router.push(toLocalePath(targetPath))
 }
 </script>
 

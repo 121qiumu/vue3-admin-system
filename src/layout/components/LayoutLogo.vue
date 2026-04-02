@@ -14,13 +14,16 @@
 
     <div v-show="!collapsed" class="layout-logo__text">
       <div class="layout-logo__title">AI Admin</div>
-      <div class="layout-logo__sub-title">Vue3 后台模板</div>
+      <div class="layout-logo__sub-title">{{ t('app.shortTitle') }}</div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+
+import { useLocale } from '@/hooks/useLocale'
 
 defineProps({
   collapsed: {
@@ -38,9 +41,11 @@ defineProps({
 })
 
 const router = useRouter()
+const { t } = useI18n()
+const { toLocalePath } = useLocale()
 
 function goHome() {
-  router.push('/dashboard')
+  router.push(toLocalePath('/dashboard'))
 }
 </script>
 

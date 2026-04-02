@@ -7,9 +7,9 @@
     :mode="mode"
     :ellipsis="false"
     :class="['layout-menu', `layout-menu--${theme}`, `layout-menu--${mode}`]"
-    router
     @open="handleMenuOpen"
     @close="handleMenuClose"
+    @select="handleSelect"
   >
     <LayoutMenuItem v-for="item in menuList" :key="item.path" :menu="item" />
   </el-menu>
@@ -17,9 +17,11 @@
 
 <script setup>
 import { computed, nextTick, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { useLayout } from '@/hooks/useLayout'
+import { useLocale } from '@/hooks/useLocale'
+import { getBaseRoutePath } from '@/locales/resolve'
 
 import LayoutMenuItem from './LayoutMenuItem.vue'
 
@@ -43,7 +45,9 @@ const props = defineProps({
 })
 
 const route = useRoute()
+const router = useRouter()
 const menuRef = ref(null)
+const { toLocalePath } = useLocale()
 const { openedMenuPathList, addOpenedMenuPath, removeOpenedMenuPath } = useLayout()
 
 function collectSubMenuPathList(menuList = []) {
@@ -67,15 +71,10 @@ const visibleSubMenuPathList = computed(() => {
   return collectSubMenuPathList(props.menuList)
 })
 
-// 当前激活菜单。
-// 如果未来某些详情页希望高亮上级菜单，可以使用 route.meta.activeMenu 覆盖。
 const activeMenu = computed(() => {
-  return route.meta?.activeMenu || route.path
+  return getBaseRoutePath(route.meta?.activeMenu || route.path)
 })
 
-// 当前真正可见且应该保持展开的父菜单列表。
-// 这份状态只来源于 store 中持久化的 openedMenuPathList，
-// 不根据当前路由反推，从而避免“当前选中菜单”和“当前展开菜单”混在一起。
 const visibleOpenedMenuPathList = computed(() => {
   const visiblePathSet = new Set(visibleSubMenuPathList.value)
   return openedMenuPathList.value.filter((path) => visiblePathSet.has(path))
@@ -90,11 +89,6 @@ async function syncMenuOpenedState() {
 
   const expectedOpenedPathSet = new Set(visibleOpenedMenuPathList.value)
 
-  // 这里显式同步展开状态：
-  // 1. store 里要求展开的父菜单，用 open 打开
-  // 2. 其余当前可见的父菜单，用 close 收起
-  // 这样无论是刷新页面、切换路由还是菜单组件内部重渲染，
-  // 最终都会回到“以持久化展开状态为准”的结果。
   visibleSubMenuPathList.value.forEach((path) => {
     if (expectedOpenedPathSet.has(path)) {
       menuRef.value.open(path)
@@ -105,8 +99,6 @@ async function syncMenuOpenedState() {
   })
 }
 
-// 用户手动展开父菜单时，单独把展开状态写入 store。
-// 这里只记录“展开过哪些父菜单”，不影响当前激活菜单。
 function handleMenuOpen(index) {
   if (props.mode !== 'vertical') {
     return
@@ -115,13 +107,16 @@ function handleMenuOpen(index) {
   addOpenedMenuPath(index)
 }
 
-// 用户手动收起父菜单时，再把对应路径从 store 中移除。
 function handleMenuClose(index) {
   if (props.mode !== 'vertical') {
     return
   }
 
   removeOpenedMenuPath(index)
+}
+
+function handleSelect(index) {
+  router.push(toLocalePath(index))
 }
 
 watch(

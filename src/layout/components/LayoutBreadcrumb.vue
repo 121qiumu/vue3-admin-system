@@ -5,11 +5,11 @@
         v-if="item.isCurrent || item.meta?.breadcrumb === false"
         class="layout-breadcrumb__current"
       >
-        {{ item.meta?.title }}
+        {{ item.title }}
       </span>
 
       <a v-else href="#" class="layout-breadcrumb__link" @click.prevent="goBreadcrumb(item)">
-        {{ item.meta?.title }}
+        {{ item.title }}
       </a>
     </el-breadcrumb-item>
   </el-breadcrumb>
@@ -19,45 +19,40 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import { getMetaTitle } from '@/locales/helper'
+import { getBaseRoutePath } from '@/locales/resolve'
+import { useLocale } from '@/hooks/useLocale'
+
 const route = useRoute()
 const router = useRouter()
+const { toLocalePath } = useLocale()
 
-// 根据当前匹配到的路由记录，自动生成面包屑列表。
-// 这里会过滤掉：
-// 1. 没有 title 的路由
-// 2. 被标记为 hidden 的路由
-// 3. 主动声明 breadcrumb: false 的路由
-//
-// 额外说明：
-// 这里单独生成 key 字段，而不是直接拿 path 当 key。
-// 原因是某些父级路由会把 redirect 指向自己的子路由，
-// 如果继续把 redirect 后的 path 当 key，就可能和子路由 path 重复，
-// 从而触发 Vue 的 Duplicate keys 警告。
 const breadcrumbList = computed(() => {
   return route.matched
     .filter((item) => {
-      return item.meta?.title && !item.meta?.hidden && item.meta?.breadcrumb !== false
+      return getMetaTitle(item.meta) && !item.meta?.hidden && item.meta?.breadcrumb !== false
     })
     .map((item, index, matchedList) => {
       const redirectPath = typeof item.redirect === 'string' ? item.redirect : ''
-      const navigatePath = redirectPath || item.path
+      const navigatePath = getBaseRoutePath(redirectPath || item.path)
       const isCurrent = index === matchedList.length - 1
 
       return {
-        key: item.name ? String(item.name) : `${item.path}-${index}`,
+        key: item.name ? String(item.name) : `${navigatePath}-${index}`,
         path: navigatePath,
         isCurrent,
+        title: getMetaTitle(item.meta, route.params),
         meta: item.meta
       }
     })
 })
 
 function goBreadcrumb(item) {
-  if (!item?.path || item.path === route.path) {
+  if (!item?.path || item.path === getBaseRoutePath(route.path)) {
     return
   }
 
-  router.push(item.path)
+  router.push(toLocalePath(item.path))
 }
 </script>
 

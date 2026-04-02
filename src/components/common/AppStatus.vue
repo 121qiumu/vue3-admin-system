@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-status" :class="[`app-status--${mode}`, `app-status--${resolvedTone}`]">
     <div class="app-status__icon-wrap">
       <div class="app-status__icon-bg">
@@ -24,13 +24,14 @@
 <script setup>
 import { computed } from 'vue'
 
+import { translate } from '@/locales/helper'
 import AppIcon from './AppIcon.vue'
 
-// 通用异常状态预设表。
-// 这样做的好处是：403、404、500、空数据、加载失败都能复用同一套组件，
-// 页面里只需要传一个 type，就能先得到一套默认标题、说明和图标。
 const STATUS_PRESET_MAP = Object.freeze({
   403: {
+    titleKey: 'error.403.title',
+    descriptionKey: 'error.403.description',
+    tipKey: 'error.403.tip',
     title: '403',
     description: '当前账号没有访问该页面的权限',
     tip: '如果你确认自己应该拥有该权限，请联系管理员进行开通。',
@@ -38,6 +39,9 @@ const STATUS_PRESET_MAP = Object.freeze({
     tone: 'warning'
   },
   404: {
+    titleKey: 'error.404.title',
+    descriptionKey: 'error.404.description',
+    tipKey: 'error.404.tip',
     title: '404',
     description: '页面不存在，请检查访问地址是否正确',
     tip: '你可以返回首页，或者从左侧菜单重新进入已有页面。',
@@ -45,6 +49,9 @@ const STATUS_PRESET_MAP = Object.freeze({
     tone: 'info'
   },
   500: {
+    titleKey: 'error.500.title',
+    descriptionKey: 'error.500.description',
+    tipKey: 'error.500.tip',
     title: '500',
     description: '系统开小差了，请稍后重试',
     tip: '如果问题持续出现，请联系管理员排查服务日志或接口服务状态。',
@@ -52,6 +59,9 @@ const STATUS_PRESET_MAP = Object.freeze({
     tone: 'danger'
   },
   empty: {
+    titleKey: 'error.empty.title',
+    descriptionKey: 'error.empty.description',
+    tipKey: 'error.empty.tip',
     title: '暂无数据',
     description: '当前还没有可展示的数据内容',
     tip: '',
@@ -59,6 +69,9 @@ const STATUS_PRESET_MAP = Object.freeze({
     tone: 'info'
   },
   error: {
+    titleKey: 'error.loadFailed.title',
+    descriptionKey: 'error.loadFailed.description',
+    tipKey: 'error.loadFailed.tip',
     title: '加载失败',
     description: '当前内容加载失败，请稍后重试',
     tip: '',
@@ -68,14 +81,10 @@ const STATUS_PRESET_MAP = Object.freeze({
 })
 
 const props = defineProps({
-  // 异常状态类型。
-  // 当前内置了 403、404、500、empty、error 五类常用场景。
   type: {
     type: String,
     default: 'empty'
   },
-  // 页面模式和区块模式共用同一个组件。
-  // page 更适合整页异常页，section 更适合卡片里的空状态、加载失败状态。
   mode: {
     type: String,
     default: 'page',
@@ -83,28 +92,22 @@ const props = defineProps({
       return ['page', 'section'].includes(value)
     }
   },
-  // 允许业务层按需覆盖默认标题。
   title: {
     type: String,
     default: ''
   },
-  // 允许业务层按需覆盖默认描述。
   description: {
     type: String,
     default: ''
   },
-  // 补充提示文案，常用于告诉用户下一步怎么办。
   tip: {
     type: String,
     default: ''
   },
-  // 允许自定义图标名称，默认取预设值。
   icon: {
     type: String,
     default: ''
   },
-  // 视觉语义色调。
-  // 常见值为 info / warning / danger。
   tone: {
     type: String,
     default: ''
@@ -116,15 +119,15 @@ const preset = computed(() => {
 })
 
 const resolvedTitle = computed(() => {
-  return props.title || preset.value.title
+  return props.title || translate(preset.value.titleKey, {}, preset.value.title)
 })
 
 const resolvedDescription = computed(() => {
-  return props.description || preset.value.description
+  return props.description || translate(preset.value.descriptionKey, {}, preset.value.description)
 })
 
 const resolvedTip = computed(() => {
-  return props.tip || preset.value.tip
+  return props.tip || translate(preset.value.tipKey, {}, preset.value.tip)
 })
 
 const resolvedIcon = computed(() => {

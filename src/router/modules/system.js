@@ -1,20 +1,15 @@
+import { DEFAULT_LOCALE, LOCALE_ROUTE_PARAM } from '@/constants/locale'
+import { resolveLocalePath } from '@/locales/resolve'
 import { Layout } from '../helper'
 
-// 系统管理模块路由。
-// 这一阶段开始把“业务页面模板”真正落成三组示例：
-// 1. 用户管理
-// 2. 角色管理
-// 3. 菜单管理
-//
-// 这里保留了一个核心原则：
-// 列表页负责菜单展示，详情页和表单页只作为业务流程页面，不进入侧边栏菜单。
 export const systemRoute = {
-  path: '/system',
+  path: `/${LOCALE_ROUTE_PARAM}/system`,
   component: Layout,
-  redirect: '/system/user',
+  redirect: (to) => resolveLocalePath('/system/user', to.params?.locale || DEFAULT_LOCALE),
   name: 'System',
   meta: {
     title: '系统管理',
+    titleKey: 'route.system',
     icon: 'IconEpSetting',
     requiresAuth: true,
     permissionCodes: ['system:access']
@@ -26,6 +21,7 @@ export const systemRoute = {
       component: () => import('@/views/system/user/index.vue'),
       meta: {
         title: '用户管理',
+        titleKey: 'route.systemUser',
         icon: 'IconEpUser',
         requiresAuth: true,
         permissionCodes: ['system:user:list']
@@ -37,6 +33,7 @@ export const systemRoute = {
       component: () => import('@/views/system/user/detail.vue'),
       meta: {
         title: '用户详情',
+        titleKey: 'route.systemUserDetail',
         hideMenu: true,
         activeMenu: '/system/user',
         requiresAuth: true,
@@ -49,6 +46,7 @@ export const systemRoute = {
       component: () => import('@/views/system/user/form.vue'),
       meta: {
         title: '新增用户',
+        titleKey: 'route.systemUserCreate',
         hideMenu: true,
         activeMenu: '/system/user',
         requiresAuth: true,
@@ -61,6 +59,7 @@ export const systemRoute = {
       component: () => import('@/views/system/user/form.vue'),
       meta: {
         title: '编辑用户',
+        titleKey: 'route.systemUserEdit',
         hideMenu: true,
         activeMenu: '/system/user',
         requiresAuth: true,
@@ -73,6 +72,7 @@ export const systemRoute = {
       component: () => import('@/views/system/role/index.vue'),
       meta: {
         title: '角色管理',
+        titleKey: 'route.systemRole',
         icon: 'IconEpUserFilled',
         requiresAuth: true,
         permissionCodes: ['system:role:list']
@@ -84,6 +84,7 @@ export const systemRoute = {
       component: () => import('@/views/system/role/detail.vue'),
       meta: {
         title: '角色详情',
+        titleKey: 'route.systemRoleDetail',
         hideMenu: true,
         activeMenu: '/system/role',
         requiresAuth: true,
@@ -96,6 +97,7 @@ export const systemRoute = {
       component: () => import('@/views/system/role/form.vue'),
       meta: {
         title: '新增角色',
+        titleKey: 'route.systemRoleCreate',
         hideMenu: true,
         activeMenu: '/system/role',
         requiresAuth: true,
@@ -108,6 +110,7 @@ export const systemRoute = {
       component: () => import('@/views/system/role/form.vue'),
       meta: {
         title: '编辑角色',
+        titleKey: 'route.systemRoleEdit',
         hideMenu: true,
         activeMenu: '/system/role',
         requiresAuth: true,
@@ -120,6 +123,7 @@ export const systemRoute = {
       component: () => import('@/views/system/menu/index.vue'),
       meta: {
         title: '菜单管理',
+        titleKey: 'route.systemMenu',
         icon: 'IconEpMenu',
         requiresAuth: true,
         permissionCodes: ['system:menu:list']
@@ -131,6 +135,7 @@ export const systemRoute = {
       component: () => import('@/views/system/menu/detail.vue'),
       meta: {
         title: '菜单详情',
+        titleKey: 'route.systemMenuDetail',
         hideMenu: true,
         activeMenu: '/system/menu',
         requiresAuth: true,
@@ -143,6 +148,7 @@ export const systemRoute = {
       component: () => import('@/views/system/menu/form.vue'),
       meta: {
         title: '新增菜单',
+        titleKey: 'route.systemMenuCreate',
         hideMenu: true,
         activeMenu: '/system/menu',
         requiresAuth: true,
@@ -155,6 +161,7 @@ export const systemRoute = {
       component: () => import('@/views/system/menu/form.vue'),
       meta: {
         title: '编辑菜单',
+        titleKey: 'route.systemMenuEdit',
         hideMenu: true,
         activeMenu: '/system/menu',
         requiresAuth: true,

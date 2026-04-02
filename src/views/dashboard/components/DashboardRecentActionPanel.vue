@@ -3,8 +3,10 @@
     <template #header>
       <div class="dashboard-panel-card__header">
         <div>
-          <div class="dashboard-panel-card__title">最近操作</div>
-          <div class="dashboard-panel-card__desc">帮助你快速回看这位角色最近的工作轨迹。</div>
+          <div class="dashboard-panel-card__title">{{ t('dashboard.panels.recent.title') }}</div>
+          <div class="dashboard-panel-card__desc">
+            {{ t('dashboard.panels.recent.description') }}
+          </div>
         </div>
       </div>
     </template>
@@ -13,8 +15,8 @@
       v-if="actionList.length === 0"
       type="empty"
       mode="section"
-      title="暂无操作记录"
-      description="当前角色最近还没有生成可展示的操作记录。"
+      :title="t('dashboard.panels.recent.emptyTitle')"
+      :description="t('dashboard.panels.recent.emptyDescription')"
     />
 
     <el-timeline v-else>
@@ -30,17 +32,21 @@
         </div>
 
         <div class="dashboard-recent-panel__item-desc">{{ item.content }}</div>
-        <div class="dashboard-recent-panel__item-meta">操作人：{{ item.operator }}</div>
+        <div class="dashboard-recent-panel__item-meta">
+          {{ t('dashboard.panels.recent.operator', { name: item.operator }) }}
+        </div>
       </el-timeline-item>
     </el-timeline>
   </el-card>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+
 import AppStatus from '@/components/common/AppStatus.vue'
 
-// 最近操作组件只负责展示时间线。
-// 这种拆分方式更适合后续接真实后端接口时继续扩展字段。
+const { t } = useI18n()
+
 defineProps({
   actionList: {
     type: Array,

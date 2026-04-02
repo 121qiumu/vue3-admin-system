@@ -29,10 +29,13 @@
 <script setup>
 import { useRouter } from 'vue-router'
 
+import { useLocale } from '@/hooks/useLocale'
+import { translate } from '@/locales/helper'
+
 const props = defineProps({
   title: {
     type: String,
-    default: '表单页面'
+    default: () => translate('common.actions.submit', {}, '表单页面')
   },
   description: {
     type: String,
@@ -49,12 +52,11 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const { toLocalePath } = useLocale()
 
-// 表单页面通常需要明确返回列表页。
-// 这里保持和详情页同样的回退规则，降低使用成本。
 function goBack() {
   if (props.backPath) {
-    router.push(props.backPath)
+    router.push(toLocalePath(props.backPath))
     return
   }
 
@@ -107,8 +109,6 @@ function goBack() {
   border-top: var(--app-border-width) solid var(--app-color-border-light);
 }
 
-/* 这里直接对插槽中的 Element Plus 表单做基础约束。
- * 这样业务页只要使用模板组件，就能默认获得更稳的小屏表现。 */
 .form-page-template__card :deep(.el-form-item__content),
 .form-page-template__card :deep(.el-page-header__content) {
   min-width: 0;

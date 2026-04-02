@@ -1,65 +1,92 @@
 <template>
   <div class="login-page">
-    <div class="login-page__glow login-page__glow--left" />
-    <div class="login-page__glow login-page__glow--right" />
+    <div class="login-page__mesh" />
+    <div class="login-page__orb login-page__orb--cyan" />
+    <div class="login-page__orb login-page__orb--amber" />
 
-    <div class="login-panel">
-      <section class="login-brand">
-        <div class="login-brand__badge">
+    <header class="login-toolbar">
+      <div class="login-toolbar__brand">
+        <div class="login-toolbar__brand-mark">
           <el-icon>
             <IconEpMonitor />
           </el-icon>
-          <span>Vue 3 通用后台模板</span>
         </div>
 
-        <h1 class="login-brand__title">从 0 到 1 搭建一个真正能跑的后台管理系统</h1>
-        <p class="login-brand__desc">
-          当前第 10 步继续完善本地 mock
-          体系，让登录、用户信息、菜单、按钮权限都能在没有真实后端时完整跑通。
-        </p>
-
-        <div class="login-brand__feature-list">
-          <div class="brand-feature-card">
-            <div class="brand-feature-card__title">本地 mock 主导开发</div>
-            <div class="brand-feature-card__desc">
-              当前开发环境默认启用 mock，方便前端先把页面、状态和权限流程跑顺。
-            </div>
-          </div>
-
-          <div class="brand-feature-card">
-            <div class="brand-feature-card__title">接口层可随时切真后端</div>
-            <div class="brand-feature-card__desc">
-              API 层按环境决定走 mock 还是走真实 request，不会和某个 mock 工具强耦合。
-            </div>
-          </div>
-
-          <div class="brand-feature-card">
-            <div class="brand-feature-card__title">菜单与按钮权限分离</div>
-            <div class="brand-feature-card__desc">
-              admin 和 editor 拿到的动态菜单、按钮权限码都不同，后续做按钮级权限会更自然。
-            </div>
-          </div>
+        <div class="login-toolbar__brand-text">
+          <div class="login-toolbar__brand-title">{{ t('login.badge') }}</div>
+          <div class="login-toolbar__brand-subtitle">{{ t('login.hero.toolbarSubtitle') }}</div>
         </div>
+      </div>
+
+      <div class="login-toolbar__actions">
+        <button
+          v-for="item in localeOptions"
+          :key="item.value"
+          type="button"
+          class="login-toolbar__locale-button"
+          :class="{ 'is-active': item.value === language }"
+          :aria-pressed="item.value === language"
+          @click="handleLocaleSwitch(item.value)"
+        >
+          {{ item.label }}
+        </button>
+      </div>
+    </header>
+
+    <main class="login-shell">
+      <section class="login-story">
+        <div class="login-story__eyebrow">{{ t('login.hero.eyebrow') }}</div>
+        <h1 class="login-story__title">{{ t('login.title') }}</h1>
+        <p class="login-story__description">{{ t('login.description') }}</p>
+
+        <div class="login-story__metrics">
+          <article v-for="item in highlightMetricList" :key="item.key" class="login-story__metric">
+            <div class="login-story__metric-value">{{ item.value }}</div>
+            <div class="login-story__metric-label">{{ item.label }}</div>
+          </article>
+        </div>
+
+        <section class="login-story__stage">
+          <div class="login-story__stage-tag">{{ t('login.hero.stageTag') }}</div>
+          <h2 class="login-story__stage-title">{{ t('login.hero.stageTitle') }}</h2>
+          <p class="login-story__stage-description">{{ t('login.hero.stageDescription') }}</p>
+
+          <div class="login-story__feature-list">
+            <article
+              v-for="item in featureCardList"
+              :key="item.key"
+              class="login-story__feature-card"
+            >
+              <div class="login-story__feature-index">{{ item.index }}</div>
+              <div class="login-story__feature-content">
+                <div class="login-story__feature-title">{{ item.title }}</div>
+                <p class="login-story__feature-description">{{ item.description }}</p>
+              </div>
+            </article>
+          </div>
+        </section>
       </section>
 
-      <section class="login-card-wrap">
-        <div class="login-card">
-          <div class="login-card__header">
-            <div>
-              <div class="login-card__title">账号登录</div>
-              <div class="login-card__sub-title">使用 Element Plus 表单完成后台系统登录体验</div>
-            </div>
-
-            <el-tag type="primary" effect="light">开发环境默认启用 Mock</el-tag>
+      <section class="login-auth">
+        <div class="login-auth__card">
+          <div class="login-auth__header">
+            <div class="login-auth__badge">{{ t('login.card.mockTag') }}</div>
+            <h2 class="login-auth__title">{{ t('login.card.title') }}</h2>
+            <p class="login-auth__subtitle">{{ t('login.card.subtitle') }}</p>
           </div>
 
-          <el-alert
-            class="login-card__alert"
-            type="info"
-            :closable="false"
-            show-icon
-            title="当前阶段先使用本地 mock 接口，后续切真实后端时只需要关闭 VITE_USE_MOCK 并替换接口地址。"
-          />
+          <div class="login-auth__notice">
+            <div class="login-auth__notice-icon">
+              <el-icon>
+                <IconEpInfoFilled />
+              </el-icon>
+            </div>
+
+            <div class="login-auth__notice-content">
+              <div class="login-auth__notice-title">{{ t('login.card.alertTitle') }}</div>
+              <p class="login-auth__notice-text">{{ t('login.card.alert') }}</p>
+            </div>
+          </div>
 
           <el-form
             ref="loginFormRef"
@@ -69,11 +96,11 @@
             label-position="top"
             @keyup.enter="handleLogin"
           >
-            <el-form-item label="用户名" prop="username">
+            <el-form-item :label="t('login.form.username')" prop="username">
               <el-input
                 v-model.trim="loginForm.username"
                 size="large"
-                placeholder="请输入用户名"
+                :placeholder="t('login.form.usernamePlaceholder')"
                 clearable
               >
                 <template #prefix>
@@ -84,12 +111,12 @@
               </el-input>
             </el-form-item>
 
-            <el-form-item label="密码" prop="password">
+            <el-form-item :label="t('login.form.password')" prop="password">
               <el-input
                 v-model="loginForm.password"
                 type="password"
                 size="large"
-                placeholder="请输入密码"
+                :placeholder="t('login.form.passwordPlaceholder')"
                 show-password
                 clearable
               >
@@ -108,14 +135,28 @@
               :loading="loginLoading"
               @click="handleLogin"
             >
-              {{ loginLoading ? '正在登录，请稍候...' : '登录系统' }}
+              {{ loginLoading ? t('login.form.submitting') : t('login.form.submit') }}
             </el-button>
           </el-form>
 
+          <div class="login-auth__helper">
+            <div class="login-auth__helper-title">{{ t('login.card.helperTitle') }}</div>
+            <p class="login-auth__helper-text">{{ t('login.card.helperText') }}</p>
+          </div>
+
           <div class="account-panel">
             <div class="account-panel__header">
-              <div class="account-panel__title">可直接体验的 mock 账号</div>
-              <div class="account-panel__tip">点击账号卡片可自动填充表单</div>
+              <div>
+                <div class="account-panel__title">{{ t('login.accountPanel.title') }}</div>
+                <div class="account-panel__tip">{{ t('login.accountPanel.tip') }}</div>
+              </div>
+
+              <div v-if="currentAccount" class="account-panel__current">
+                <span class="account-panel__current-label">{{
+                  t('login.accountPanel.current')
+                }}</span>
+                <span class="account-panel__current-name">{{ currentAccount.nickname }}</span>
+              </div>
             </div>
 
             <div class="account-list">
@@ -124,137 +165,207 @@
                 :key="account.username"
                 type="button"
                 class="account-card"
+                :class="{ 'is-active': account.username === loginForm.username.trim() }"
+                :aria-pressed="account.username === loginForm.username.trim()"
                 @click="fillAccount(account)"
               >
                 <div class="account-card__header">
-                  <span class="account-card__name">{{ account.nickname }}</span>
-                  <el-tag size="small" effect="plain">{{ account.username }}</el-tag>
+                  <div class="account-card__identity">
+                    <div class="account-card__name-row">
+                      <span class="account-card__name">{{ account.nickname }}</span>
+                      <span class="account-card__action">{{
+                        t('login.accountPanel.fillAction')
+                      }}</span>
+                    </div>
+                    <div class="account-card__account">{{ account.username }}</div>
+                  </div>
+
+                  <div class="account-card__tag-list">
+                    <el-tag
+                      v-for="role in account.roleCodeList"
+                      :key="`${account.username}-${role}`"
+                      size="small"
+                      effect="plain"
+                    >
+                      {{ getRoleLabel(role, role) }}
+                    </el-tag>
+                  </div>
                 </div>
 
-                <div class="account-card__row">账号：{{ account.username }}</div>
-                <div class="account-card__row">密码：{{ account.password }}</div>
+                <div class="account-card__credentials">
+                  <div class="account-card__credential">
+                    <span>{{ t('login.accountPanel.account') }}</span>
+                    <strong>{{ account.username }}</strong>
+                  </div>
+                  <div class="account-card__credential">
+                    <span>{{ t('login.accountPanel.password') }}</span>
+                    <strong>{{ account.password }}</strong>
+                  </div>
+                </div>
 
-                <div class="account-card__tag-list">
-                  <el-tag
-                    v-for="role in account.roleCodeList"
-                    :key="`${account.username}-${role}`"
-                    size="small"
-                    type="success"
-                    effect="light"
-                  >
-                    {{ role }}
-                  </el-tag>
-
-                  <el-tag size="small" type="primary" effect="light">
-                    动态菜单 {{ account.asyncMenuCount }} 组
-                  </el-tag>
-
-                  <el-tag size="small" type="warning" effect="light">
-                    按钮权限 {{ account.buttonPermissionCount }} 项
-                  </el-tag>
+                <div class="account-card__meta">
+                  <span class="account-card__meta-item">
+                    {{ t('login.accountPanel.asyncMenuCount', { count: account.asyncMenuCount }) }}
+                  </span>
+                  <span class="account-card__meta-item">
+                    {{
+                      t('login.accountPanel.buttonPermissionCount', {
+                        count: account.buttonPermissionCount
+                      })
+                    }}
+                  </span>
                 </div>
               </button>
             </div>
           </div>
         </div>
       </section>
-    </div>
+    </main>
   </div>
 </template>
 
 <script setup>
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
+
 import { getLoginAccountListApi } from '@/api/auth'
 import { getButtonPermissionApi, getMenuListApi } from '@/api/permission'
+import { useLocale } from '@/hooks/useLocale'
+import { getRoleLabel } from '@/locales/helper'
 import { clearPermissionRoutes, rebuildPermissionRoutes } from '@/permission'
+import { showAuthMessage } from '@/utils/feedback'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useTabsStore } from '@/store/modules/tabs'
 import { useUserStore } from '@/store/modules/user'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
+const { language, localeOptions, changeLocale, toLocalePath } = useLocale()
 const userStore = useUserStore()
 const permissionStore = usePermissionStore()
 const tabsStore = useTabsStore()
 
-// 表单实例。
 const loginFormRef = ref(null)
-
-// 登录按钮加载状态。
 const loginLoading = ref(false)
-
-// 登录表单数据。
 const loginForm = reactive({
   username: 'admin',
   password: '123456'
 })
-
-// 登录页展示的 mock 账号列表。
 const mockAccountList = ref([])
 
-// Element Plus 表单校验规则。
-const loginRules = {
+const loginRules = computed(() => ({
   username: [
     {
       required: true,
-      message: '请输入用户名',
+      message: t('login.validation.usernameRequired'),
       trigger: 'blur'
     },
     {
       min: 3,
       max: 20,
-      message: '用户名长度建议控制在 3 到 20 个字符之间',
+      message: t('login.validation.usernameLength'),
       trigger: 'blur'
     }
   ],
   password: [
     {
       required: true,
-      message: '请输入密码',
+      message: t('login.validation.passwordRequired'),
       trigger: 'blur'
     },
     {
       min: 6,
       max: 20,
-      message: '密码长度建议控制在 6 到 20 个字符之间',
+      message: t('login.validation.passwordLength'),
       trigger: 'blur'
     }
   ]
-}
+}))
+
+const featureCardList = computed(() => [
+  {
+    key: 'mockDriven',
+    index: '01',
+    title: t('login.featureList.mockDriven.title'),
+    description: t('login.featureList.mockDriven.description')
+  },
+  {
+    key: 'switchBackend',
+    index: '02',
+    title: t('login.featureList.switchBackend.title'),
+    description: t('login.featureList.switchBackend.description')
+  },
+  {
+    key: 'permission',
+    index: '03',
+    title: t('login.featureList.permission.title'),
+    description: t('login.featureList.permission.description')
+  }
+])
+
+const highlightMetricList = computed(() => {
+  const totalAsyncMenuCount = mockAccountList.value.reduce(
+    (sum, item) => sum + (item.asyncMenuCount || 0),
+    0
+  )
+  const totalButtonPermissionCount = mockAccountList.value.reduce(
+    (sum, item) => sum + (item.buttonPermissionCount || 0),
+    0
+  )
+
+  return [
+    {
+      key: 'accounts',
+      value: String(mockAccountList.value.length).padStart(2, '0'),
+      label: t('login.hero.metrics.accounts')
+    },
+    {
+      key: 'menus',
+      value: String(totalAsyncMenuCount).padStart(2, '0'),
+      label: t('login.hero.metrics.menus')
+    },
+    {
+      key: 'permissions',
+      value: String(totalButtonPermissionCount).padStart(2, '0'),
+      label: t('login.hero.metrics.permissions')
+    }
+  ]
+})
+
+const currentAccount = computed(() => {
+  const currentUsername = loginForm.username.trim()
+  return mockAccountList.value.find((item) => item.username === currentUsername) || null
+})
 
 function getRedirectPath() {
-  const redirect = route.query.redirect
-
-  if (typeof redirect === 'string' && redirect && redirect !== '/login') {
-    return redirect
-  }
-
-  return '/dashboard'
+  const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
+  return redirect ? toLocalePath(redirect) : toLocalePath('/dashboard')
 }
 
-// 读取演示账号列表。
 async function loadMockAccountList() {
   try {
     mockAccountList.value = await getLoginAccountListApi()
   } catch (error) {
     mockAccountList.value = []
-    console.warn('[login] 获取 mock 账号列表失败', error)
+    console.warn('[login] ' + t('login.messages.loadMockAccountFailed'), error)
   }
 }
 
-// 点击账号卡片后，快速填充表单。
+async function handleLocaleSwitch(nextLocale) {
+  if (nextLocale === language.value) {
+    return
+  }
+
+  await changeLocale(nextLocale)
+}
+
 function fillAccount(account) {
   loginForm.username = account.username
   loginForm.password = account.password
 }
 
-// 执行登录。
-// 当前完整流程分成 6 步：
-// 1. 表单校验
-// 2. 登录拿 token
-// 3. 获取用户信息
-// 4. 获取菜单和按钮权限
-// 5. 生成权限菜单与动态路由
-// 6. 跳转到目标页面
 async function handleLogin() {
   if (!loginFormRef.value || loginLoading.value) {
     return
@@ -282,7 +393,6 @@ async function handleLogin() {
       getButtonPermissionApi(currentToken)
     ])
 
-    // 把接口返回的权限码、菜单、按钮权限统一交给 permission store。
     permissionStore.buildPermissionState({
       permissionCodeList: userInfo.permissionCodeList || [],
       menuRouteList,
@@ -290,19 +400,26 @@ async function handleLogin() {
     })
 
     rebuildPermissionRoutes()
-
-    // 切换账号时，先把旧标签页清掉，避免把上一个账号的页面状态带过来。
     tabsStore.resetTabsState()
 
-    ElMessage.success(`登录成功，欢迎回来：${userInfo.nickname || userInfo.username}`)
+    showAuthMessage({
+      type: 'success',
+      title: t('login.messages.loginSuccessTitle'),
+      message: t('login.messages.loginSuccess', {
+        name: userInfo.nickname || userInfo.username
+      })
+    })
     await router.replace(getRedirectPath())
   } catch (error) {
-    // 如果登录流程中间任意一步失败，就把本地登录态和权限状态一起清理干净。
     userStore.clearUserState()
     clearPermissionRoutes()
     tabsStore.resetTabsState()
 
-    ElMessage.error(error?.message || '登录失败，请稍后重试')
+    showAuthMessage({
+      type: 'error',
+      title: t('login.messages.loginFailedTitle'),
+      message: error?.message || t('login.messages.loginFailed')
+    })
   } finally {
     loginLoading.value = false
   }
@@ -319,282 +436,685 @@ onMounted(async () => {
 
 <style scoped lang="less">
 .login-page {
+  --login-text: #f8fafc;
+  --login-text-muted: rgba(226, 232, 240, 0.78);
+  --login-panel-bg: rgba(8, 21, 38, 0.72);
+  --login-panel-border: rgba(148, 163, 184, 0.18);
+  --login-surface: rgba(255, 255, 255, 0.96);
+  --login-surface-soft: rgba(248, 250, 252, 0.84);
+  --login-surface-line: rgba(148, 163, 184, 0.2);
+  --login-accent: #38bdf8;
+  --login-accent-strong: #f59e0b;
   position: relative;
   min-height: 100vh;
-  padding: 40px;
+  padding: 28px clamp(20px, 4vw, 40px) 40px;
   overflow: hidden;
   background:
-    radial-gradient(circle at top left, rgba(64, 158, 255, 0.2), transparent 28%),
-    radial-gradient(circle at right bottom, rgba(24, 144, 255, 0.16), transparent 24%),
-    linear-gradient(135deg, var(--app-color-bg-page) 0%, var(--app-color-bg-container) 100%);
+    radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.18), transparent 28%),
+    radial-gradient(circle at 92% 18%, rgba(245, 158, 11, 0.18), transparent 24%),
+    linear-gradient(135deg, #081120 0%, #0f172a 52%, #131e33 100%);
+  font-family: 'Avenir Next', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
-.login-page__glow {
+.login-page__mesh {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.96) 36%, transparent 82%);
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.login-page__orb {
   position: absolute;
   width: 420px;
   height: 420px;
   border-radius: 50%;
-  filter: blur(70px);
+  filter: blur(72px);
+  opacity: 0.44;
   pointer-events: none;
-  opacity: 0.45;
 }
 
-.login-page__glow--left {
+.login-page__orb--cyan {
   top: -120px;
-  left: -120px;
-  background: rgba(64, 158, 255, 0.35);
+  left: -100px;
+  background: rgba(56, 189, 248, 0.42);
 }
 
-.login-page__glow--right {
+.login-page__orb--amber {
   right: -120px;
   bottom: -120px;
-  background: rgba(24, 144, 255, 0.28);
+  background: rgba(245, 158, 11, 0.32);
 }
 
-.login-panel {
+.login-toolbar,
+.login-shell {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(320px, 1.1fr) minmax(360px, 520px);
-  gap: 28px;
-  align-items: stretch;
-  min-height: calc(100vh - 80px);
+  max-width: 1320px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
-.login-brand,
-.login-card {
-  border: 1px solid var(--app-color-border-light);
-  border-radius: 24px;
-  backdrop-filter: blur(16px);
-  box-shadow: var(--app-shadow-lg);
-}
-
-.login-brand {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 48px;
-  color: var(--app-color-text-primary);
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--app-color-primary) 12%, var(--app-color-bg-container)) 0%,
-    color-mix(in srgb, var(--app-color-bg-container) 92%, transparent) 100%
-  );
-}
-
-.login-brand__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  width: fit-content;
-  padding: 8px 14px;
-  margin-bottom: 24px;
-  font-size: var(--app-font-size-small);
-  color: var(--app-color-primary);
-  background-color: color-mix(in srgb, var(--app-color-primary) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--app-color-primary) 24%, transparent);
-  border-radius: 999px;
-}
-
-.login-brand__title {
-  margin: 0;
-  font-size: clamp(30px, 4vw, 44px);
-  line-height: 1.25;
-}
-
-.login-brand__desc {
-  margin: 18px 0 0;
-  font-size: var(--app-font-size-medium);
-  line-height: 1.9;
-  color: var(--app-color-text-secondary);
-}
-
-.login-brand__feature-list {
-  display: grid;
-  gap: 16px;
-  margin-top: 36px;
-}
-
-.brand-feature-card {
-  padding: 18px 20px;
-  background-color: color-mix(in srgb, var(--app-color-bg-container) 86%, transparent);
-  border: 1px solid var(--app-color-border-light);
-  border-radius: 18px;
-}
-
-.brand-feature-card__title {
-  font-size: var(--app-font-size-medium);
-  font-weight: 700;
-  color: var(--app-color-text-primary);
-}
-
-.brand-feature-card__desc {
-  margin-top: 10px;
-  line-height: 1.8;
-  color: var(--app-color-text-secondary);
-}
-
-.login-card-wrap {
+.login-toolbar {
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-
-.login-card {
-  width: 100%;
-  padding: 30px;
-  background-color: color-mix(in srgb, var(--app-color-bg-container) 92%, transparent);
-}
-
-.login-card__header {
-  display: flex;
-  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
 }
 
-.login-card__title {
-  font-size: 28px;
+.login-toolbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.login-toolbar__brand-mark {
+  display: inline-flex;
+  width: 46px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #ffffff;
+  background: linear-gradient(140deg, #0ea5e9 0%, #2563eb 60%, #f59e0b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(14, 165, 233, 0.22);
+}
+
+.login-toolbar__brand-title {
+  font-size: 15px;
   font-weight: 700;
-  color: var(--app-color-text-primary);
+  color: var(--login-text);
 }
 
-.login-card__sub-title {
-  margin-top: 10px;
-  line-height: 1.7;
-  color: var(--app-color-text-secondary);
+.login-toolbar__brand-subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(191, 219, 254, 0.72);
+  text-transform: uppercase;
 }
 
-.login-card__alert {
-  margin-top: 22px;
+.login-toolbar__actions {
+  display: inline-flex;
+  gap: 10px;
 }
 
-.login-form {
+.login-toolbar__locale-button {
+  padding: 9px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.82);
+  background: rgba(15, 23, 42, 0.34);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  transition:
+    transform var(--app-transition-duration) var(--app-transition-timing),
+    border-color var(--app-transition-duration) var(--app-transition-timing),
+    background-color var(--app-transition-duration) var(--app-transition-timing),
+    color var(--app-transition-duration) var(--app-transition-timing);
+}
+
+.login-toolbar__locale-button:hover,
+.login-toolbar__locale-button.is-active {
+  color: #ffffff;
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(125, 211, 252, 0.56);
+  transform: translateY(-1px);
+}
+
+.login-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(420px, 540px);
+  gap: clamp(24px, 3vw, 40px);
+  align-items: center;
+  min-height: calc(100vh - 118px);
   margin-top: 24px;
 }
 
+.login-story {
+  display: grid;
+  gap: 24px;
+  animation: login-fade-up 0.72s ease both;
+}
+
+.login-story__eyebrow {
+  width: fit-content;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #bfdbfe;
+  background: rgba(15, 23, 42, 0.42);
+  border: 1px solid rgba(125, 211, 252, 0.24);
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.login-story__title {
+  max-width: 760px;
+  margin: 0;
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 1.08;
+  color: var(--login-text);
+}
+
+.login-story__description {
+  max-width: 720px;
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.9;
+  color: var(--login-text-muted);
+}
+
+.login-story__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.login-story__metric {
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 22px;
+  backdrop-filter: blur(16px);
+}
+
+.login-story__metric-value {
+  font-size: clamp(30px, 3vw, 38px);
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.login-story__metric-label {
+  margin-top: 10px;
+  font-size: 13px;
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.login-story__stage {
+  padding: 28px;
+  background: var(--login-panel-bg);
+  border: 1px solid var(--login-panel-border);
+  border-radius: 28px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 28px 60px rgba(2, 8, 23, 0.18);
+}
+
+.login-story__stage-tag {
+  width: fit-content;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fef3c7;
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.login-story__stage-title {
+  margin: 18px 0 0;
+  font-size: clamp(24px, 3vw, 32px);
+  line-height: 1.2;
+  color: var(--login-text);
+}
+
+.login-story__stage-description {
+  max-width: 720px;
+  margin: 14px 0 0;
+  line-height: 1.9;
+  color: var(--login-text-muted);
+}
+
+.login-story__feature-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.login-story__feature-card {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 22px;
+}
+
+.login-story__feature-index {
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(140deg, rgba(14, 165, 233, 0.32), rgba(37, 99, 235, 0.08));
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  border-radius: 18px;
+}
+
+.login-story__feature-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--login-text);
+}
+
+.login-story__feature-description {
+  margin: 8px 0 0;
+  line-height: 1.85;
+  color: var(--login-text-muted);
+}
+
+.login-auth {
+  display: flex;
+  justify-content: flex-end;
+  animation: login-fade-up 0.72s ease 0.08s both;
+}
+
+.login-auth__card {
+  width: 100%;
+  padding: 32px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(248, 250, 252, 0.94) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 30px;
+  box-shadow: 0 30px 72px rgba(2, 8, 23, 0.28);
+  backdrop-filter: blur(18px);
+}
+
+.login-auth__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #0f766e;
+  background: rgba(15, 118, 110, 0.08);
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.login-auth__title {
+  margin: 16px 0 0;
+  font-size: 32px;
+  line-height: 1.14;
+  color: #0f172a;
+}
+
+.login-auth__subtitle {
+  margin: 12px 0 0;
+  line-height: 1.8;
+  color: #475569;
+}
+
+.login-auth__notice {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+  padding: 18px;
+  background: rgba(14, 165, 233, 0.07);
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  border-radius: 22px;
+}
+
+.login-auth__notice-icon {
+  display: inline-flex;
+  width: 46px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #0ea5e9;
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 16px;
+}
+
+.login-auth__notice-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.login-auth__notice-text {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #475569;
+}
+
+.login-form {
+  margin-top: 28px;
+}
+
+.login-form :deep(.el-form-item) {
+  margin-bottom: 20px;
+}
+
 .login-form :deep(.el-form-item__label) {
-  font-weight: 600;
-  color: var(--app-color-text-primary);
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.login-form :deep(.el-input__wrapper) {
+  min-height: 54px;
+  background: #f8fafc;
+  border-radius: 16px;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.22) inset;
+  transition:
+    box-shadow var(--app-transition-duration) var(--app-transition-timing),
+    transform var(--app-transition-duration) var(--app-transition-timing);
+}
+
+.login-form :deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.36) inset;
+}
+
+.login-form :deep(.el-input__wrapper.is-focus) {
+  box-shadow:
+    0 0 0 1px rgba(14, 165, 233, 0.78) inset,
+    0 0 0 4px rgba(56, 189, 248, 0.14);
+}
+
+.login-form :deep(.el-input__inner) {
+  color: #0f172a;
 }
 
 .login-form__submit {
   width: 100%;
-  margin-top: 8px;
+  height: 54px;
+  margin-top: 6px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0f766e 0%, #2563eb 56%, #f59e0b 100%);
+  box-shadow: 0 18px 36px rgba(37, 99, 235, 0.22);
+}
+
+.login-form__submit:hover,
+.login-form__submit:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 42px rgba(37, 99, 235, 0.26);
+}
+
+.login-auth__helper {
+  margin-top: 24px;
+  padding: 16px 18px;
+  background: var(--login-surface-soft);
+  border: 1px solid var(--login-surface-line);
+  border-radius: 20px;
+}
+
+.login-auth__helper-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.login-auth__helper-text {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #64748b;
 }
 
 .account-panel {
-  margin-top: 26px;
-  padding-top: 22px;
-  border-top: 1px solid var(--app-color-border-light);
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .account-panel__header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
 }
 
 .account-panel__title {
-  font-size: var(--app-font-size-medium);
+  font-size: 18px;
   font-weight: 700;
-  color: var(--app-color-text-primary);
+  color: #0f172a;
 }
 
 .account-panel__tip {
-  font-size: var(--app-font-size-small);
-  color: var(--app-color-text-secondary);
+  margin-top: 8px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.account-panel__current {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(15, 118, 110, 0.08);
+  border: 1px solid rgba(15, 118, 110, 0.12);
+  border-radius: 999px;
+}
+
+.account-panel__current-label {
+  font-size: 12px;
+  color: #0f766e;
+}
+
+.account-panel__current-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .account-list {
   display: grid;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 14px;
+  margin-top: 18px;
 }
 
 .account-card {
   width: 100%;
-  padding: 16px;
-  text-align: left;
+  padding: 18px;
   color: inherit;
+  text-align: left;
   cursor: pointer;
-  background-color: var(--app-color-bg-elevated);
-  border: 1px solid var(--app-color-border-light);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 22px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
   transition:
     transform var(--app-transition-duration) var(--app-transition-timing),
     border-color var(--app-transition-duration) var(--app-transition-timing),
-    box-shadow var(--app-transition-duration) var(--app-transition-timing);
+    box-shadow var(--app-transition-duration) var(--app-transition-timing),
+    background-color var(--app-transition-duration) var(--app-transition-timing);
 }
 
-.account-card:hover {
-  border-color: color-mix(in srgb, var(--app-color-primary) 38%, transparent);
-  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+.account-card:hover,
+.account-card.is-active {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(14, 165, 233, 0.4);
+  box-shadow: 0 22px 38px rgba(37, 99, 235, 0.12);
   transform: translateY(-2px);
 }
 
 .account-card__header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
+}
+
+.account-card__name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .account-card__name {
-  font-size: var(--app-font-size-medium);
+  font-size: 16px;
   font-weight: 700;
-  color: var(--app-color-text-primary);
+  color: #0f172a;
 }
 
-.account-card__row {
+.account-card__action {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.1);
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.account-card__account {
   margin-top: 8px;
-  font-size: var(--app-font-size-small);
-  color: var(--app-color-text-secondary);
+  font-size: 13px;
+  color: #64748b;
 }
 
 .account-card__tag-list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
+}
+
+.account-card__credentials {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.account-card__credential {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  background: rgba(248, 250, 252, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 16px;
+}
+
+.account-card__credential span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.account-card__credential strong {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.account-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-top: 14px;
 }
 
-@media (max-width: 1100px) {
-  .login-page {
-    padding: 24px;
+.account-card__meta-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #475569;
+  background: rgba(241, 245, 249, 0.88);
+  border-radius: 999px;
+}
+
+@keyframes login-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
   }
 
-  .login-panel {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1180px) {
+  .login-page {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .login-shell {
     grid-template-columns: 1fr;
     min-height: auto;
   }
 
-  .login-brand {
-    padding: 32px;
+  .login-auth {
+    justify-content: stretch;
+    order: -1;
+  }
+
+  .login-auth__card {
+    max-width: 760px;
+  }
+
+  .account-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 768px) {
   .login-page {
-    padding: 16px;
+    padding: 18px 16px 28px;
   }
 
-  .login-brand,
-  .login-card {
-    padding: 22px;
-    border-radius: 20px;
-  }
-
-  .login-card__header,
-  .account-panel__header,
-  .account-card__header {
+  .login-toolbar {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .login-brand__title {
-    font-size: 30px;
+  .login-toolbar__actions {
+    flex-wrap: wrap;
+  }
+
+  .login-story__metrics,
+  .account-list,
+  .account-card__credentials {
+    grid-template-columns: 1fr;
+  }
+
+  .login-story__stage,
+  .login-auth__card {
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .login-story__feature-card,
+  .login-auth__notice {
+    grid-template-columns: 1fr;
+  }
+
+  .account-panel__header,
+  .account-card__header,
+  .account-card__name-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .account-card__tag-list {
+    justify-content: flex-start;
   }
 }
 </style>

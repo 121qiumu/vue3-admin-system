@@ -1,7 +1,13 @@
-﻿<template>
-  <!-- App.vue 只保留根级路由出口。
-    这样做有两个好处：
-    1. 应用根组件足够干净
-    2. 后台框架 Layout 交给路由系统决定，而不是写死在 App.vue 里 -->
-  <router-view />
+<template>
+  <!-- 根组件统一托管 Element Plus 国际化配置。
+    这样路由切换、语言切换后，组件库内置文案也会一起联动。 -->
+  <el-config-provider :locale="elementPlusLocale">
+    <router-view />
+  </el-config-provider>
 </template>
+
+<script setup>
+import { useLocale } from '@/hooks/useLocale'
+
+const { elementPlusLocale } = useLocale()
+</script>

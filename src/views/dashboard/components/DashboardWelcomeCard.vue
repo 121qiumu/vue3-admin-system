@@ -6,13 +6,13 @@
           {{ welcomeData.greeting }}，{{ displayName }}
         </div>
 
-        <div class="dashboard-welcome-card__title">欢迎来到今天的后台工作台</div>
+        <div class="dashboard-welcome-card__title">{{ t('dashboard.welcome.title') }}</div>
         <div class="dashboard-welcome-card__desc">{{ welcomeData.subtitle }}</div>
 
         <div class="dashboard-welcome-card__meta">
           <el-tag type="primary" effect="light">{{ welcomeData.roleLabel }}</el-tag>
           <span class="dashboard-welcome-card__meta-text">
-            最近登录：{{ welcomeData.lastLoginAt }}
+            {{ t('dashboard.welcome.lastLogin', { time: welcomeData.lastLoginAt }) }}
           </span>
         </div>
 
@@ -40,8 +40,10 @@
 </template>
 
 <script setup>
-// 欢迎卡片只负责展示首页顶部的角色信息、提醒信息和概览数字。
-// 这样页面层就不用关心具体排版细节，后续想改样式也更集中。
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps({
   displayName: {
     type: String,

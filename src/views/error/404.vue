@@ -2,26 +2,30 @@
   <div class="error-page">
     <AppStatus type="404">
       <template #actions>
-        <el-button type="primary" @click="goDashboard">返回首页</el-button>
-        <el-button @click="goBack">返回上一页</el-button>
+        <el-button type="primary" @click="goDashboard">{{
+          t('common.actions.backHome')
+        }}</el-button>
+        <el-button @click="goBack">{{ t('common.actions.goBack') }}</el-button>
       </template>
     </AppStatus>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
+import { useLocale } from '@/hooks/useLocale'
 import AppStatus from '@/components/common/AppStatus.vue'
 
 const router = useRouter()
+const { t } = useI18n()
+const { toLocalePath } = useLocale()
 
-// 返回后台首页。
 function goDashboard() {
-  router.push('/dashboard')
+  router.push(toLocalePath('/dashboard'))
 }
 
-// 返回上一页。
 function goBack() {
   router.back()
 }
