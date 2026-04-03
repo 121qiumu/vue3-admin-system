@@ -60,9 +60,11 @@ defineProps({
 .layout-sidebar {
   display: flex;
   width: var(--app-layout-sidebar-width);
-  min-height: 100vh;
+  min-height: 0;
+  height: 100%;
   flex-shrink: 0;
   flex-direction: column;
+  overflow: hidden;
   color: var(--app-color-sidebar-text);
   background-color: var(--app-color-sidebar-bg);
   border-right: var(--app-border-width) solid
@@ -78,6 +80,7 @@ defineProps({
 
 .layout-sidebar__scrollbar {
   flex: 1;
+  min-height: 0;
 }
 
 :deep(.el-menu) {
@@ -99,6 +102,7 @@ defineProps({
     left: 0;
     z-index: var(--app-z-index-layout);
     width: var(--app-layout-sidebar-width);
+    height: 100vh;
     transform: translateX(-100%);
   }
 

@@ -1,4 +1,4 @@
-﻿import { DEFAULT_LOCALE, LOCALE_ROUTE_PARAM } from '@/constants/locale'
+import { DEFAULT_LOCALE, LOCALE_ROUTE_PARAM } from '@/constants/locale'
 import { getBaseRoutePath, getPreferredLocale, resolveLocalePath } from '@/locales/resolve'
 import { Layout, resolveRoutePath, transformRoutesToMenu } from '../helper'
 
@@ -37,7 +37,7 @@ export const loginRoute = {
   name: 'Login',
   component: () => import('@/views/login/index.vue'),
   meta: {
-    title: '登录',
+    title: '\u767b\u5f55',
     titleKey: 'route.login',
     hidden: true
   }
@@ -56,7 +56,7 @@ export const layoutRoute = {
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index.vue'),
       meta: {
-        title: '首页',
+        title: '\u9996\u9875',
         titleKey: 'route.dashboard',
         icon: 'IconEpHomeFilled',
         affix: true,
@@ -71,6 +71,7 @@ export const layoutRoute = {
         title: 'VueUse Demo',
         titleKey: 'route.vueuseDemo',
         icon: 'IconEpReading',
+        keepAlive: true,
         requiresAuth: true
       }
     }

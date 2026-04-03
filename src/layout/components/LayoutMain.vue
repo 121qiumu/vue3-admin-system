@@ -1,9 +1,13 @@
-﻿<template>
-  <main class="layout-main">
+<template>
+  <main ref="mainRef" class="layout-main">
     <div class="layout-main__inner">
-      <RouterView v-slot="{ Component, route }">
+      <RouterView v-slot="{ Component, route: viewRoute }">
         <transition name="fade-slide" mode="out-in">
-          <component :is="Component" :key="route.fullPath" />
+          <KeepAlive v-if="viewRoute.meta?.keepAlive" :include="cachedViewNameList">
+            <component :is="Component" :key="viewRoute.name || viewRoute.fullPath" />
+          </KeepAlive>
+
+          <component :is="Component" v-else :key="viewRoute.fullPath" />
         </transition>
       </RouterView>
     </div>
@@ -11,9 +15,28 @@
 </template>
 
 <script setup>
-// 主内容区组件。
-// 后续如果要接入 KeepAlive、页面缓存、页面级过渡动画等能力，
-// 通常都会继续在这个位置扩展。
+import { nextTick, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+import { useTagsView } from '@/hooks/useTagsView'
+
+const currentRoute = useRoute()
+const mainRef = ref(null)
+const { cachedViewNameList } = useTagsView()
+
+watch(
+  () => currentRoute.fullPath,
+  async () => {
+    await nextTick()
+    mainRef.value?.scrollTo({
+      top: 0,
+      left: 0
+    })
+  },
+  {
+    immediate: true
+  }
+)
 </script>
 
 <style scoped lang="less">
@@ -21,15 +44,13 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
+  overscroll-behavior: contain;
   padding: var(--app-layout-content-padding);
   overflow: auto;
 }
 
 .layout-main__inner {
-  min-height: calc(
-    100vh - var(--app-layout-header-height) - var(--app-layout-tags-view-height) -
-      var(--app-layout-content-padding) * 2
-  );
+  min-height: 100%;
 }
 
 .fade-slide-enter-active,

@@ -49,8 +49,7 @@ const {
 const { menuRouteList, topMenuList, activeTopMenuPath, mixSidebarMenuList } = useLayoutMenu()
 const route = useRoute()
 
-// 统一由 Layout 根组件决定当前到底渲染哪一种布局模式。
-// 这样后续即使继续扩展第四种布局，也只需要在这里补一个映射关系。
+// Let the layout shell decide which concrete layout component should render.
 const currentLayoutComponent = computed(() => {
   const layoutComponentMap = {
     [LAYOUT_MODE_ENUM.LEFT]: LeftLayout,
@@ -70,7 +69,7 @@ onMounted(() => {
   window.addEventListener('resize', handleResize)
 })
 
-// 移动端点击菜单切换页面后，自动把侧边栏收起来。
+// Close the mobile sidebar after navigation so the next page is immediately visible.
 watch(
   () => route.fullPath,
   () => {
@@ -89,12 +88,27 @@ onBeforeUnmount(() => {
 .layout-shell {
   position: relative;
   display: flex;
+  height: 100vh;
   min-height: 100vh;
+  overflow: hidden;
   background-color: var(--app-color-bg-page);
 }
 
 .layout-shell.is-sidebar-collapse :deep(.layout-sidebar) {
   width: var(--app-layout-sidebar-collapse-width);
+}
+
+:deep(.layout-mode) {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+:deep(.layout-mode__main) {
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 @media (max-width: 992px) {

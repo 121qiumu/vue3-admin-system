@@ -26,7 +26,30 @@
     </div>
 
     <div class="layout-header__right">
+      <button
+        v-if="isMobile"
+        type="button"
+        class="layout-header__settings-button"
+        @click="settingsDrawerVisible = true"
+      >
+        <span class="layout-header__settings-icon-wrap">
+          <el-icon>
+            <IconEpSetting />
+          </el-icon>
+        </span>
+
+        <span class="layout-header__settings-meta">
+          <span class="layout-header__settings-title">{{ t('layout.header.settings') }}</span>
+          <span class="layout-header__settings-summary">{{ settingsSummary }}</span>
+        </span>
+
+        <el-icon class="layout-header__action-icon">
+          <IconEpArrowRight />
+        </el-icon>
+      </button>
+
       <el-popover
+        v-else
         placement="bottom-end"
         trigger="click"
         :width="440"
@@ -52,97 +75,7 @@
           </button>
         </template>
 
-        <div class="layout-header__settings-panel">
-          <section class="layout-header__settings-section">
-            <div class="layout-header__section-header">
-              <div class="layout-header__section-title">{{ t('layout.header.layoutMode') }}</div>
-              <div class="layout-header__section-desc">{{ t('layout.header.layoutModeDesc') }}</div>
-            </div>
-
-            <div class="layout-header__option-grid">
-              <button
-                v-for="item in layoutModeOptions"
-                :key="item.value"
-                type="button"
-                class="layout-header__option-card"
-                :class="{ 'is-active': item.value === layoutMode }"
-                :aria-pressed="item.value === layoutMode"
-                @click="handleLayoutCommand(item.value)"
-              >
-                <div class="layout-header__option-title-row">
-                  <span class="layout-header__option-title">{{ item.label }}</span>
-                  <el-icon v-if="item.value === layoutMode" class="layout-header__option-check">
-                    <IconEpCheck />
-                  </el-icon>
-                </div>
-                <div class="layout-header__option-desc">{{ item.description }}</div>
-              </button>
-            </div>
-          </section>
-
-          <section class="layout-header__settings-section">
-            <div class="layout-header__section-header">
-              <div class="layout-header__section-title">{{ t('layout.header.theme') }}</div>
-              <div class="layout-header__section-desc">{{ t('layout.header.themeDesc') }}</div>
-            </div>
-
-            <div class="layout-header__option-grid layout-header__option-grid--theme">
-              <button
-                v-for="item in themeOptions"
-                :key="item.value"
-                type="button"
-                class="layout-header__option-card layout-header__theme-card"
-                :class="[
-                  `layout-header__theme-card--${item.value}`,
-                  { 'is-active': item.value === theme }
-                ]"
-                :aria-pressed="item.value === theme"
-                @click="handleThemeCommand(item.value)"
-              >
-                <div class="layout-header__theme-preview">
-                  <span class="layout-header__theme-dot layout-header__theme-dot--primary" />
-                  <span class="layout-header__theme-dot layout-header__theme-dot--secondary" />
-                  <span class="layout-header__theme-dot layout-header__theme-dot--accent" />
-                </div>
-
-                <div class="layout-header__option-title-row">
-                  <span class="layout-header__option-title">{{ item.label }}</span>
-                  <el-icon v-if="item.value === theme" class="layout-header__option-check">
-                    <IconEpCheck />
-                  </el-icon>
-                </div>
-                <div class="layout-header__option-desc">{{ item.description }}</div>
-              </button>
-            </div>
-          </section>
-
-          <section class="layout-header__settings-section">
-            <div class="layout-header__section-header">
-              <div class="layout-header__section-title">{{ t('layout.header.language') }}</div>
-              <div class="layout-header__section-desc">{{ t('layout.header.languageDesc') }}</div>
-            </div>
-
-            <div class="layout-header__option-grid layout-header__option-grid--locale">
-              <button
-                v-for="item in localeOptions"
-                :key="item.value"
-                type="button"
-                class="layout-header__option-card"
-                :class="{ 'is-active': item.value === language }"
-                :aria-pressed="item.value === language"
-                @click="handleLocaleCommand(item.value)"
-              >
-                <div class="layout-header__option-title-row">
-                  <span class="layout-header__option-title">{{ item.label }}</span>
-                  <el-icon v-if="item.value === language" class="layout-header__option-check">
-                    <IconEpCheck />
-                  </el-icon>
-                </div>
-                <div class="layout-header__option-desc">{{ item.value }}</div>
-              </button>
-            </div>
-          </section>
-        </div>
+        <LayoutSettingsPanel />
       </el-popover>
 
       <el-dropdown
@@ -177,6 +110,17 @@
       </el-dropdown>
     </div>
   </header>
+
+  <el-drawer
+    v-model="settingsDrawerVisible"
+    class="layout-header__settings-drawer"
+    :title="t('layout.header.settings')"
+    direction="rtl"
+    size="min(100vw, 440px)"
+    append-to-body
+  >
+    <LayoutSettingsPanel />
+  </el-drawer>
 
   <el-dialog
     v-model="logoutDialogVisible"
@@ -216,6 +160,7 @@ import { useTabsStore } from '@/store/modules/tabs'
 import { useUserStore } from '@/store/modules/user'
 
 import LayoutBreadcrumb from './LayoutBreadcrumb.vue'
+import LayoutSettingsPanel from './LayoutSettingsPanel.vue'
 
 defineProps({
   sidebarCollapsed: {
@@ -247,9 +192,10 @@ const router = useRouter()
 const { t } = useI18n()
 const userStore = useUserStore()
 const tabsStore = useTabsStore()
-const { layoutMode, setLayoutMode } = useLayout()
-const { theme, themeOptions, setTheme } = useTheme()
-const { language, localeOptions, currentLocaleLabel, changeLocale, toLocalePath } = useLocale()
+const { layoutMode } = useLayout()
+const { theme, themeOptions } = useTheme()
+const { currentLocaleLabel, toLocalePath } = useLocale()
+const settingsDrawerVisible = ref(false)
 const logoutDialogVisible = ref(false)
 const logoutLoading = ref(false)
 
@@ -298,18 +244,6 @@ const currentRoleLabel = computed(() => {
   return getRoleLabel(firstRoleCode, t('common.roles.backendUser'))
 })
 
-function handleLayoutCommand(nextLayoutMode) {
-  setLayoutMode(nextLayoutMode)
-}
-
-function handleThemeCommand(nextTheme) {
-  setTheme(nextTheme)
-}
-
-async function handleLocaleCommand(nextLocale) {
-  await changeLocale(nextLocale)
-}
-
 function handleUserCommand(command) {
   if (command === 'dashboard') {
     router.push(toLocalePath('/dashboard'))
@@ -333,6 +267,7 @@ async function handleConfirmLogout() {
 
   clearPermissionRoutes()
   tabsStore.resetTabsState()
+  settingsDrawerVisible.value = false
   logoutDialogVisible.value = false
   logoutLoading.value = false
   await nextTick()
@@ -483,148 +418,6 @@ async function handleConfirmLogout() {
   color: var(--app-color-text-secondary);
 }
 
-.layout-header__settings-panel {
-  display: grid;
-  gap: var(--app-space-lg);
-}
-
-.layout-header__settings-section {
-  display: grid;
-  gap: var(--app-space-sm);
-}
-
-.layout-header__section-title {
-  font-size: var(--app-font-size-base);
-  font-weight: 700;
-  color: var(--app-color-text-primary);
-}
-
-.layout-header__section-desc {
-  margin-top: 4px;
-  font-size: var(--app-font-size-small);
-  line-height: 1.7;
-  color: var(--app-color-text-secondary);
-}
-
-.layout-header__option-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--app-space-sm);
-}
-
-.layout-header__option-grid--theme {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.layout-header__option-grid--locale {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.layout-header__option-card {
-  display: grid;
-  gap: var(--app-space-xs);
-  padding: var(--app-space-sm);
-  color: inherit;
-  text-align: left;
-  background-color: var(--app-color-bg-page);
-  border: var(--app-border-width) solid var(--app-color-border-light);
-  border-radius: var(--app-radius-large);
-  cursor: pointer;
-  transition:
-    border-color var(--app-transition-duration) var(--app-transition-timing),
-    background-color var(--app-transition-duration) var(--app-transition-timing),
-    box-shadow var(--app-transition-duration) var(--app-transition-timing),
-    transform var(--app-transition-duration) var(--app-transition-timing);
-}
-
-.layout-header__option-card:hover {
-  border-color: color-mix(in srgb, var(--app-color-primary) 50%, var(--app-color-border-light));
-  box-shadow: var(--app-shadow-sm);
-  transform: translateY(-1px);
-}
-
-.layout-header__option-card.is-active {
-  background-color: color-mix(in srgb, var(--app-color-primary) 10%, var(--app-color-bg-container));
-  border-color: var(--app-color-primary);
-}
-
-.layout-header__option-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--app-space-xs);
-}
-
-.layout-header__option-title {
-  font-size: var(--app-font-size-small);
-  font-weight: 700;
-  color: var(--app-color-text-primary);
-}
-
-.layout-header__option-check {
-  color: var(--app-color-primary);
-}
-
-.layout-header__option-desc {
-  font-size: var(--app-font-size-extra-small);
-  line-height: 1.7;
-  color: var(--app-color-text-secondary);
-}
-
-.layout-header__theme-card {
-  position: relative;
-}
-
-.layout-header__theme-preview {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 18px;
-}
-
-.layout-header__theme-dot {
-  display: inline-flex;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.layout-header__theme-card--default .layout-header__theme-dot--primary {
-  background-color: #409eff;
-}
-
-.layout-header__theme-card--default .layout-header__theme-dot--secondary {
-  background-color: #67c23a;
-}
-
-.layout-header__theme-card--default .layout-header__theme-dot--accent {
-  background-color: #e6a23c;
-}
-
-.layout-header__theme-card--dark .layout-header__theme-dot--primary {
-  background-color: #79bbff;
-}
-
-.layout-header__theme-card--dark .layout-header__theme-dot--secondary {
-  background-color: #303133;
-}
-
-.layout-header__theme-card--dark .layout-header__theme-dot--accent {
-  background-color: #909399;
-}
-
-.layout-header__theme-card--deep-blue .layout-header__theme-dot--primary {
-  background-color: #1d4ed8;
-}
-
-.layout-header__theme-card--deep-blue .layout-header__theme-dot--secondary {
-  background-color: #0f172a;
-}
-
-.layout-header__theme-card--deep-blue .layout-header__theme-dot--accent {
-  background-color: #38bdf8;
-}
-
 .layout-header__logout-dialog-text {
   line-height: 1.8;
   color: var(--app-color-text-regular);
@@ -644,15 +437,21 @@ async function handleConfirmLogout() {
   box-shadow: var(--app-shadow-lg);
 }
 
+:deep(.layout-header__settings-drawer .el-drawer__header) {
+  margin-bottom: 0;
+  padding: var(--app-space-lg);
+  color: var(--app-color-text-primary);
+  border-bottom: var(--app-border-width) solid var(--app-color-border-light);
+}
+
+:deep(.layout-header__settings-drawer .el-drawer__body) {
+  padding: var(--app-space-lg);
+  background-color: var(--app-color-bg-container);
+}
+
 @media (max-width: 992px) {
   .layout-header {
     padding: 0 var(--app-space-md);
-  }
-
-  .layout-header__option-grid,
-  .layout-header__option-grid--theme,
-  .layout-header__option-grid--locale {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -681,6 +480,10 @@ async function handleConfirmLogout() {
   .layout-header__settings-button,
   .layout-header__user {
     padding: 6px 10px;
+  }
+
+  .layout-header__settings-button {
+    min-width: 0;
   }
 
   .layout-header__settings-meta,

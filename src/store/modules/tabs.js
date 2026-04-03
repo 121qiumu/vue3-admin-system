@@ -7,8 +7,20 @@ import { staticAffixTagList } from '@/router/modules/static'
 import { TABS_STORAGE_KEY } from '@/constants/storage'
 import { getStorage, removeStorage, setStorage } from '@/utils/storage'
 
+function getLeafRouteRecord(route) {
+  if (Array.isArray(route?.matched) && route.matched.length > 0) {
+    return route.matched[route.matched.length - 1]
+  }
+
+  return route
+}
+
 function createTagFromRoute(route) {
-  if (!route?.name || route.meta?.hidden) {
+  const currentRouteRecord = getLeafRouteRecord(route)
+  const currentRouteMeta = currentRouteRecord?.meta || {}
+  const currentRouteName = currentRouteRecord?.name || route?.name
+
+  if (!currentRouteName || currentRouteMeta.hidden) {
     return null
   }
 
@@ -17,11 +29,11 @@ function createTagFromRoute(route) {
   return {
     fullPath: route.fullPath,
     path: basePath,
-    name: route.name,
-    titleKey: route.meta?.titleKey || '',
-    title: getRouteTitle(route) || route.meta?.title || String(route.name),
-    affix: Boolean(route.meta?.affix),
-    keepAlive: Boolean(route.meta?.keepAlive)
+    name: currentRouteName,
+    titleKey: currentRouteMeta.titleKey || '',
+    title: getRouteTitle(route) || currentRouteMeta.title || String(currentRouteName),
+    affix: Boolean(currentRouteMeta.affix),
+    keepAlive: Boolean(currentRouteMeta.keepAlive)
   }
 }
 
