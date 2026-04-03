@@ -37,7 +37,7 @@ export const loginRoute = {
   name: 'Login',
   component: () => import('@/views/login/index.vue'),
   meta: {
-    title: '\u767b\u5f55',
+    title: '登录',
     titleKey: 'route.login',
     hidden: true
   }
@@ -56,7 +56,7 @@ export const layoutRoute = {
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index.vue'),
       meta: {
-        title: '\u9996\u9875',
+        title: '首页',
         titleKey: 'route.dashboard',
         icon: 'IconEpHomeFilled',
         affix: true,
