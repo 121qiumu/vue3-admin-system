@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE, LOCALE_ROUTE_PARAM } from '@/constants/locale'
+﻿import { DEFAULT_LOCALE, LOCALE_ROUTE_PARAM } from '@/constants/locale'
 import { getBaseRoutePath, getPreferredLocale, resolveLocalePath } from '@/locales/resolve'
 import { Layout, resolveRoutePath, transformRoutesToMenu } from '../helper'
 
@@ -60,6 +60,17 @@ export const layoutRoute = {
         titleKey: 'route.dashboard',
         icon: 'IconEpHomeFilled',
         affix: true,
+        requiresAuth: true
+      }
+    },
+    {
+      path: 'vueuse-demo',
+      name: 'VueUseDemo',
+      component: () => import('@/views/vueuse-demo/index.vue'),
+      meta: {
+        title: 'VueUse Demo',
+        titleKey: 'route.vueuseDemo',
+        icon: 'IconEpReading',
         requiresAuth: true
       }
     }

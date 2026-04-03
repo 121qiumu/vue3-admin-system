@@ -2,6 +2,7 @@ export default {
   route: {
     login: 'Sign in',
     dashboard: 'Dashboard',
+    vueuseDemo: 'VueUse demo',
     forbidden: '403',
     notFound: '404',
     serverError: '500',

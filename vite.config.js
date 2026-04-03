@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
   // 统一管理开发服务器的基础参数。
   // 优先读取 .env 文件里的配置，没有时再回退到默认值。
   const devHost = env.VITE_DEV_HOST || '0.0.0.0'
-  const devPort = Number(env.VITE_DEV_PORT || 5173)
+  const devPort = Number(env.VITE_DEV_PORT || 9524)
   const shouldOpen = env.VITE_DEV_OPEN === 'true'
 
   // 统一管理代理相关参数。

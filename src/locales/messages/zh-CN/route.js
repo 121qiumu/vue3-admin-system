@@ -2,6 +2,7 @@ export default {
   route: {
     login: '登录',
     dashboard: '首页',
+    vueuseDemo: 'VueUse 学习 Demo',
     forbidden: '403',
     notFound: '404',
     serverError: '500',
