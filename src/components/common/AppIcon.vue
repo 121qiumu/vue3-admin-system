@@ -37,6 +37,7 @@ import IconEpUser from '~icons/ep/user'
 import IconEpUserFilled from '~icons/ep/user-filled'
 import IconEpView from '~icons/ep/view'
 import IconEpWarningFilled from '~icons/ep/warning-filled'
+import IconEpReading from '~icons/ep/reading'
 
 // 图标组件映射表。
 // 当前推荐统一使用“IconEp开头”的字符串作为配置值，
@@ -66,7 +67,8 @@ const iconComponentMap = {
   IconEpUser,
   IconEpUserFilled,
   IconEpView,
-  IconEpWarningFilled
+  IconEpWarningFilled,
+  IconEpReading
 }
 
 const props = defineProps({
