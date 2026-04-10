@@ -8,11 +8,41 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 
+// 创建打包体积分析插件。
+// 把分析报告相关配置集中到这里，方便后续统一维护。
+async function createBundleVisualizer() {
+  // 只有真正开启分析时才动态加载 visualizer。
+  // 这样普通 build 不会额外加载分析依赖，也不会影响日常打包流程。
+  const { visualizer } = await import('rollup-plugin-visualizer')
+
+  return visualizer({
+    // 报告输出文件位置。
+    // 固定写到 dist/stats.html，方便和构建产物放在一起查看。
+    filename: 'dist/stats.html',
+
+    // 打包结束后自动打开分析报告页面。
+    // 这样执行分析命令后可以第一时间看到结果。
+    open: true,
+
+    // 在报告中显示 gzip 压缩后的体积。
+    // 便于评估资源经过常见压缩后的传输成本。
+    gzipSize: true,
+
+    // 在报告中显示 brotli 压缩后的体积。
+    // 便于对比现代压缩方案下的真实体积表现。
+    brotliSize: true,
+
+    // 使用 treemap 模板展示模块体积分布。
+    // 这种视图最适合快速定位哪些依赖或模块占包体积最大。
+    template: 'treemap'
+  })
+}
+
 // Vite 配置文件。
 // 这一版配置遵循两个原则：
 // 1. 尽量保持简单，让初学者能看懂每一块在做什么
 // 2. 保留后台项目常用能力，避免后续频繁返工
-export default defineConfig(({ mode }) => {
+export default defineConfig(async ({ mode }) => {
   // 读取当前模式下的环境变量。
   // 第 3 个参数传入空字符串，表示把所有环境变量都读取出来，
   // 这样后面扩展自定义变量时会更方便。
@@ -29,56 +59,70 @@ export default defineConfig(({ mode }) => {
   const apiPrefix = env.VITE_API_PREFIX || '/api'
   const apiProxyTarget = env.VITE_API_PROXY_TARGET
 
+  // 控制是否开启打包体积分析。
+  // 默认普通打包不分析，只有专用命令通过 cross-env 传入 ANALYZE=true 时才开启。
+  const shouldAnalyze = process.env.ANALYZE === 'true'
+
+  // 先整理基础插件列表。
+  // 这样普通开发和普通打包逻辑会保持稳定，分析能力只在需要时额外挂载。
+  const plugins = [
+    // Vue 官方插件。
+    // 这是 Vite + Vue 项目的基础插件，没有它就无法识别 .vue 文件。
+    vue(),
+
+    // 自动导入常用 API。
+    // 当前主要处理 Vue、Vue Router、Pinia 和 Element Plus 的服务型 API。
+    AutoImport({
+      imports: ['vue', 'vue-router', 'pinia'],
+      resolvers: [
+        // Element Plus 组件服务函数按需自动导入。
+        // 这里显式加上 importStyle: 'css'，让 ElMessage、ElMessageBox、ElNotification
+        // 这类服务组件在自动导入时，也能自动带上对应的样式文件。
+        // 对当前 JavaScript + Less 项目来说，使用 css 版本最直接、最稳定。
+        ElementPlusResolver({
+          importStyle: 'css'
+        })
+      ],
+      // 当前项目使用 JavaScript，所以不生成 d.ts 文件。
+      dts: false
+    }),
+
+    // 自动导入组件。
+    // 这里同时处理 Element Plus 组件和图标组件。
+    Components({
+      resolvers: [
+        // Element Plus 组件按需导入，并自动引入对应样式。
+        ElementPlusResolver({
+          importStyle: 'css'
+        }),
+
+        // 图标自动导入方案。
+        // 当前采用 unplugin-icons + Iconify 图标集，先启用 ep 图标集合。
+        // 使用时可以直接写 <IconEpHomeFilled /> 这种组件形式。
+        IconsResolver({
+          prefix: 'Icon',
+          enabledCollections: ['ep']
+        })
+      ],
+      dts: false
+    }),
+
+    // 图标插件本体。
+    // 它负责把图标转成 Vue 组件，供模板中直接使用。
+    Icons({
+      compiler: 'vue3',
+      autoInstall: false
+    })
+  ]
+
+  // 只有执行专用分析命令时才追加分析插件。
+  // 这样普通 build 不会生成额外报告，也不会额外触发打开页面。
+  if (shouldAnalyze) {
+    plugins.push(await createBundleVisualizer())
+  }
+
   return {
-    plugins: [
-      // Vue 官方插件。
-      // 这是 Vite + Vue 项目的基础插件，没有它就无法识别 .vue 文件。
-      vue(),
-
-      // 自动导入常用 API。
-      // 当前主要处理 Vue、Vue Router、Pinia 和 Element Plus 的服务型 API。
-      AutoImport({
-        imports: ['vue', 'vue-router', 'pinia'],
-        resolvers: [
-          // Element Plus 组件服务函数按需自动导入。
-          // 这里显式加上 importStyle: 'css'，让 ElMessage、ElMessageBox、ElNotification
-          // 这类服务组件在自动导入时，也能自动带上对应的样式文件。
-          // 对当前 JavaScript + Less 项目来说，使用 css 版本最直接、最稳定。
-          ElementPlusResolver({
-            importStyle: 'css'
-          })
-        ],
-        // 当前项目使用 JavaScript，所以不生成 d.ts 文件。
-        dts: false
-      }),
-
-      // 自动导入组件。
-      // 这里同时处理 Element Plus 组件和图标组件。
-      Components({
-        resolvers: [
-          // Element Plus 组件按需导入，并自动引入对应样式。
-          ElementPlusResolver({
-            importStyle: 'css'
-          }),
-
-          // 图标自动导入方案。
-          // 当前采用 unplugin-icons + Iconify 图标集，先启用 ep 图标集合。
-          // 使用时可以直接写 <IconEpHomeFilled /> 这种组件形式。
-          IconsResolver({
-            prefix: 'Icon',
-            enabledCollections: ['ep']
-          })
-        ],
-        dts: false
-      }),
-
-      // 图标插件本体。
-      // 它负责把图标转成 Vue 组件，供模板中直接使用。
-      Icons({
-        compiler: 'vue3',
-        autoInstall: false
-      })
-    ],
+    plugins,
 
     resolve: {
       alias: {
