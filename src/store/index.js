@@ -18,14 +18,15 @@ import { useUserStore } from './modules/user'
 const pinia = createPinia()
 
 // 项目启动时统一恢复各个 store 的缓存。
-export function initializeStore() {
+// 这里改成 async，是因为语言包现在按需加载，恢复应用状态时需要等待语言资源就绪。
+export async function initializeStore() {
   const userStore = useUserStore(pinia)
   const appStore = useAppStore(pinia)
   const permissionStore = usePermissionStore(pinia)
   const tabsStore = useTabsStore(pinia)
 
   userStore.restoreUserState()
-  appStore.restoreAppState()
+  await appStore.restoreAppState()
   permissionStore.restorePermissionState()
   tabsStore.restoreTabsState()
 }

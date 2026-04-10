@@ -74,8 +74,8 @@ export const useAppStore = defineStore('app', () => {
     theme.value = applyTheme(theme.value)
   }
 
-  function syncLanguageToDom() {
-    language.value = applyAppLocale(language.value)
+  async function syncLanguageToDom() {
+    language.value = await applyAppLocale(language.value)
   }
 
   function setTheme(nextTheme) {
@@ -84,10 +84,17 @@ export const useAppStore = defineStore('app', () => {
     persistAppState()
   }
 
-  function setLanguage(nextLanguage) {
-    language.value = normalizeLocale(nextLanguage || DEFAULT_LOCALE)
-    syncLanguageToDom()
-    persistAppState()
+  async function setLanguage(nextLanguage) {
+    const normalizedLanguage = normalizeLocale(nextLanguage || DEFAULT_LOCALE)
+    const localeChanged = language.value !== normalizedLanguage
+
+    language.value = normalizedLanguage
+    await syncLanguageToDom()
+
+    if (localeChanged) {
+      persistAppState()
+    }
+
     return language.value
   }
 
@@ -188,7 +195,7 @@ export const useAppStore = defineStore('app', () => {
     mobileSidebarVisible.value = false
   }
 
-  function restoreAppState() {
+  async function restoreAppState() {
     const defaultState = createDefaultAppState()
     const cachedState = getStorage(APP_STORAGE_KEY, defaultState)
 
@@ -200,14 +207,14 @@ export const useAppStore = defineStore('app', () => {
     openedMenuPathList.value = normalizeOpenedMenuPathList(cachedState.openedMenuPathList)
 
     syncThemeToDom()
-    syncLanguageToDom()
+    await syncLanguageToDom()
 
     if (typeof window !== 'undefined') {
       updateDeviceTypeByWidth(window.innerWidth)
     }
   }
 
-  function resetAppState() {
+  async function resetAppState() {
     const defaultState = createDefaultAppState()
 
     theme.value = defaultState.theme
@@ -219,7 +226,7 @@ export const useAppStore = defineStore('app', () => {
     mobileSidebarVisible.value = false
 
     syncThemeToDom()
-    syncLanguageToDom()
+    await syncLanguageToDom()
     removeStorage(APP_STORAGE_KEY)
   }
 

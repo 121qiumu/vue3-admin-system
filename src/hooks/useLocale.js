@@ -42,7 +42,7 @@ export function useLocale() {
   }
 
   async function changeLocale(nextLocale) {
-    const normalizedLocale = appStore.setLanguage(nextLocale)
+    const normalizedLocale = await appStore.setLanguage(nextLocale)
     const targetPath = resolveLocalePath(route.fullPath || route.path, normalizedLocale)
 
     if (targetPath !== route.fullPath) {
@@ -52,8 +52,8 @@ export function useLocale() {
     return normalizedLocale
   }
 
-  function setLanguage(nextLocale) {
-    return appStore.setLanguage(normalizeLocale(nextLocale))
+  async function setLanguage(nextLocale) {
+    return await appStore.setLanguage(normalizeLocale(nextLocale))
   }
 
   return {

@@ -1,3 +1,4 @@
+import { brotliCompressSync, constants as zlibConstants, gzipSync } from 'node:zlib'
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig, loadEnv } from 'vite'
@@ -7,6 +8,141 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
+
+function normalizeModulePath(path = '') {
+  return String(path || '').replace(/\\/g, '/')
+}
+
+function getPackageName(id = '') {
+  const normalizedId = normalizeModulePath(id)
+  const packagePath = normalizedId.split('/node_modules/').pop() || ''
+  const pathSegmentList = packagePath.split('/')
+
+  if (pathSegmentList[0]?.startsWith('@')) {
+    return `${pathSegmentList[0] || ''}/${pathSegmentList[1] || ''}`
+  }
+
+  return pathSegmentList[0] || ''
+}
+
+// 为常驻依赖提供更稳定的 vendor chunk。
+// 这样浏览器缓存命中率更高，也能避免所有第三方代码都堆进入口 chunk。
+function createManualChunks(id = '') {
+  const normalizedId = normalizeModulePath(id)
+
+  // 语言包现在按语言拆分成独立异步 chunk，切换语言时再下载。
+  if (normalizedId.includes('/src/locales/messages/zh-CN/')) {
+    return 'locale-zh-CN'
+  }
+
+  if (normalizedId.includes('/src/locales/messages/en-GB/')) {
+    return 'locale-en-GB'
+  }
+
+  if (!normalizedId.includes('/node_modules/')) {
+    return undefined
+  }
+
+  const packageName = getPackageName(normalizedId)
+
+  // Vue 运行时、路由和状态管理属于高频基础依赖，单独拆出来更适合长期缓存。
+  if (
+    packageName === 'vue' ||
+    packageName === 'vue-router' ||
+    packageName === 'pinia' ||
+    packageName.startsWith('@vue/')
+  ) {
+    return 'vendor-framework'
+  }
+
+  // 国际化和日期格式化经常一起变更，但和业务代码耦合较弱，适合单独缓存。
+  if (
+    packageName === 'vue-i18n' ||
+    packageName === 'dayjs' ||
+    packageName.startsWith('@intlify/')
+  ) {
+    return 'vendor-i18n'
+  }
+
+  // 网络请求层依赖通常更新频率低，拆出来后可减少入口文件波动。
+  if (packageName === 'axios') {
+    return 'vendor-http'
+  }
+
+  // VueUse 只在特定页面使用，单独拆包可以避免影响主业务首屏。
+  if (packageName === '@vueuse/core') {
+    return 'vendor-vueuse'
+  }
+
+  // lodash-es 主要来自表格等重组件链路，独立出来后更容易定位和缓存。
+  if (packageName === 'lodash-es') {
+    return 'vendor-utils'
+  }
+
+  return undefined
+}
+
+function isCompressibleAsset(fileName = '') {
+  return /\.(css|js|mjs|json|html|svg|txt|xml)$/i.test(fileName)
+}
+
+function normalizeAssetSource(source) {
+  if (source instanceof Uint8Array) {
+    return Buffer.from(source)
+  }
+
+  return Buffer.from(String(source))
+}
+
+// 用 Node 内置 zlib 直接生成 gzip / brotli 产物。
+// 这样不用额外引入新的压缩插件依赖，改动更小，也更容易回退。
+function createCompressionPlugin({ threshold = 10240 } = {}) {
+  return {
+    name: 'app:compression',
+    apply: 'build',
+    generateBundle(_, bundle) {
+      Object.entries(bundle).forEach(([fileName, output]) => {
+        if (!isCompressibleAsset(fileName)) {
+          return
+        }
+
+        const sourceBuffer =
+          output.type === 'asset'
+            ? normalizeAssetSource(output.source)
+            : Buffer.from(output.code, 'utf-8')
+
+        // 小文件通常压缩收益有限，保留原文件即可，避免生成过多低价值产物。
+        if (sourceBuffer.byteLength < threshold) {
+          return
+        }
+
+        const gzipBuffer = gzipSync(sourceBuffer)
+
+        if (gzipBuffer.byteLength < sourceBuffer.byteLength) {
+          this.emitFile({
+            type: 'asset',
+            fileName: `${fileName}.gz`,
+            source: gzipBuffer
+          })
+        }
+
+        const brotliBuffer = brotliCompressSync(sourceBuffer, {
+          params: {
+            [zlibConstants.BROTLI_PARAM_QUALITY]: 11
+          }
+        })
+
+        if (brotliBuffer.byteLength < sourceBuffer.byteLength) {
+          this.emitFile({
+            type: 'asset',
+            fileName: `${fileName}.br`,
+            source: brotliBuffer
+          })
+        }
+      })
+    }
+  }
+}
 
 // 创建打包体积分析插件。
 // 把分析报告相关配置集中到这里，方便后续统一维护。
@@ -63,6 +199,11 @@ export default defineConfig(async ({ mode }) => {
   // 默认普通打包不分析，只有专用命令通过 cross-env 传入 ANALYZE=true 时才开启。
   const shouldAnalyze = process.env.ANALYZE === 'true'
 
+  // 控制是否为生产产物生成 gzip / brotli 压缩文件。
+  // 通过环境变量保留显式开关，方便不同环境按需启停和快速回退。
+  const shouldCompress = mode !== 'development' && env.VITE_BUILD_COMPRESS !== 'false'
+  const compressionThreshold = Number(env.VITE_BUILD_COMPRESS_THRESHOLD || 10240)
+
   // 先整理基础插件列表。
   // 这样普通开发和普通打包逻辑会保持稳定，分析能力只在需要时额外挂载。
   const plugins = [
@@ -114,6 +255,16 @@ export default defineConfig(async ({ mode }) => {
       autoInstall: false
     })
   ]
+
+  // 生产构建时生成 gzip / brotli 静态压缩文件。
+  // 这样部署到支持预压缩资源的服务器后，可以直接减少传输体积。
+  if (shouldCompress) {
+    plugins.push(
+      createCompressionPlugin({
+        threshold: compressionThreshold
+      })
+    )
+  }
 
   // 只有执行专用分析命令时才追加分析插件。
   // 这样普通 build 不会生成额外报告，也不会额外触发打开页面。
@@ -179,12 +330,16 @@ export default defineConfig(async ({ mode }) => {
           // 学习阶段显式引入样式来源，会更容易理解变量来自哪里。
         }
       }
-    }
+    },
 
-    // 如果后续需要做打包优化，可以在这里继续扩展 build 配置。
-    // build: {
-    //   sourcemap: false,
-    //   chunkSizeWarningLimit: 1500
-    // }
+    build: {
+      // 保留默认的代码压缩策略，同时显式配置拆包规则。
+      // 这样既能维持 Vite 默认稳定性，也能让企业项目更容易做长期缓存。
+      rollupOptions: {
+        output: {
+          manualChunks: createManualChunks
+        }
+      }
+    }
   }
 })

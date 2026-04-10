@@ -12,9 +12,9 @@ import { applyAppLocale, setDocumentTitleByRoute, syncLocaleByRoute } from '@/lo
 
 // 安装 vue-i18n 插件。
 // 这里在 app.use(i18n) 之前先调用 applyAppLocale，
-// 是为了让 Day.js、document.lang 等非 Vue 部分也先切到正确语言。
-export function setupI18n(app) {
-  applyAppLocale(i18n.global.locale.value)
+// 是为了让语言包、Day.js、document.lang 等非 Vue 部分也先切到正确语言。
+export async function setupI18n(app) {
+  await applyAppLocale(i18n.global.locale.value)
   app.use(i18n)
 }
 
@@ -22,9 +22,9 @@ export function setupI18n(app) {
 // beforeEach 更适合做“是否允许进入”的判断，
 // afterEach 更适合做“进入页面后同步标题和语言状态”的副作用处理。
 export function setupI18nRouterGuard(router) {
-  router.afterEach((to) => {
+  router.afterEach(async (to) => {
     // 根据当前路由上的语言前缀同步语言状态，例如 /en-GB/... -> 英文。
-    syncLocaleByRoute(to)
+    await syncLocaleByRoute(to)
 
     // 进入页面后统一设置浏览器标题。
     setDocumentTitleByRoute(to)

@@ -13,18 +13,20 @@ import App from './App.vue'
 import { setupPlugins } from './plugins'
 import './styles/index.less'
 
-// createApp(App) 会基于根组件创建一个 Vue 应用实例。
-// 你可以把它理解成“整棵前端应用树的总控制器”。
-// 后续的路由、Pinia、国际化、指令，都是往这个实例上继续安装的。
-const app = createApp(App)
+async function bootstrap() {
+  // createApp(App) 会基于根组件创建一个 Vue 应用实例。
+  // 你可以把它理解成“整棵前端应用树的总控制器”。
+  // 后续的路由、Pinia、国际化、指令，都是往这个实例上继续安装的。
+  const app = createApp(App)
 
-// setupPlugins(app) 会统一完成项目级能力注册。
-// 这样 main.js 自己就只负责“启动顺序”，不需要塞满实现细节。
-// 对学习来说，这种拆分很重要：
-// 1. 先知道启动顺序。
-// 2. 再进入对应模块看具体实现。
-setupPlugins(app)
+  // setupPlugins(app) 会统一完成项目级能力注册。
+  // 现在这里使用 await，是因为启动阶段需要先等语言包恢复完成，
+  // 再去挂载应用，避免首屏出现“先显示 fallback 文案再切换”的闪动。
+  await setupPlugins(app)
 
-// mount('#app') 表示把整个 Vue 应用挂到 index.html 里的 #app 节点上。
-// 只有执行到这一步，浏览器里才会真正把页面渲染出来。
-app.mount('#app')
+  // mount('#app') 表示把整个 Vue 应用挂到 index.html 里的 #app 节点上。
+  // 只有执行到这一步，浏览器里才会真正把页面渲染出来。
+  app.mount('#app')
+}
+
+bootstrap()

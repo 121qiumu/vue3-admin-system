@@ -47,7 +47,7 @@ export function setupPermissionGuard(router) {
     const tabsStore = useTabsStore(pinia)
 
     const routeLocale = getLocaleFromRouteLike(to)
-    appStore.setLanguage(routeLocale)
+    await appStore.setLanguage(routeLocale)
 
     const hasToken = Boolean(userStore.token)
     const baseRoutePath = getBaseRoutePath(to.path)

@@ -13,7 +13,7 @@ import elementZhCn from 'element-plus/es/locale/lang/zh-cn'
 import 'dayjs/locale/en-gb'
 import 'dayjs/locale/zh-cn'
 
-import i18n from './index'
+import i18n, { preloadLocaleMessages } from './index'
 import { DEFAULT_LOCALE, LOCALE_OPTIONS, LOCALE_ENUM } from '@/constants/locale'
 import { getLocaleFromRouteLike, normalizeLocale } from './resolve'
 
@@ -45,8 +45,12 @@ export function getElementPlusLocale(locale = DEFAULT_LOCALE) {
 
 // 应用语言到整个前端环境。
 // 它不仅会修改 vue-i18n 当前语言，还会同步 Day.js 和 document.lang。
-export function applyAppLocale(locale = DEFAULT_LOCALE) {
+export async function applyAppLocale(locale = DEFAULT_LOCALE) {
   const normalizedLocale = normalizeLocale(locale)
+
+  // 先确保当前语言和 fallback 语言都已加载。
+  // 这样切换语言后，页面文案和缺词兜底都能立即生效。
+  await preloadLocaleMessages(normalizedLocale)
 
   i18n.global.locale.value = normalizedLocale
   dayjs.locale(DAYJS_LOCALE_MAP[normalizedLocale] || DAYJS_LOCALE_MAP[DEFAULT_LOCALE])
@@ -108,7 +112,7 @@ export function getStatusLabel(status = '', fallbackText = '') {
   return translate(`common.status.${status}`, {}, fallbackText || status)
 }
 
-export function syncLocaleByRoute(routeLike = {}) {
+export async function syncLocaleByRoute(routeLike = {}) {
   const routeLocale = getLocaleFromRouteLike(routeLike)
-  return applyAppLocale(routeLocale)
+  return await applyAppLocale(routeLocale)
 }

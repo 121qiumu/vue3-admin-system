@@ -17,16 +17,16 @@ import { useUserStore } from '@/store/modules/user'
 
 // 统一注册项目级插件。
 // 这里相当于是“启动总装配车间”，把原本分散在各处的初始化动作放到一个地方统一执行。
-export function setupPlugins(app) {
+export async function setupPlugins(app) {
   // 先安装 Pinia，这样后面的插件和守卫就都能访问全局 store 了。
   app.use(pinia)
 
   // 恢复本地缓存里的 store 状态。
   // 这一步会把 token、主题、语言、标签页等信息从 localStorage 读回内存。
-  initializeStore()
+  await initializeStore()
 
   // 注册国际化，并把当前语言同步到 vue-i18n / Element Plus / Day.js / document.lang。
-  setupI18n(app)
+  await setupI18n(app)
 
   // 这里要显式传入 pinia，是因为当前代码运行在组件外部。
   // 在组件内部可以直接 useUserStore()，但在这里必须告诉 Pinia“使用哪一个实例”。
