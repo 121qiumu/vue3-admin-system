@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是 mock 原始数据文件，主要提供数组、对象等静态演示数据。
+ * 2. 所在分层：本地模拟数据层：在没有真实后端时提供演示数据。
+ * 3. 当前文件主要依赖：{ createMockError } <- src/mock/helper.js
+ * 4. 当前文件对外暴露：命名导出：getRoleOptionList、getMenuParentOptionList、queryUserPageData、getUserDetailData、saveUserData、removeUserData、queryRolePageData、getRoleDetailData、saveRoleData、removeRoleData、queryMenuPageData、getMenuDetailData、saveMenuData、removeMenuData
+ * 5. 常见上游调用方：src/mock/modules/system.js
+ * 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
+ */
 import { createMockError } from '@/mock/helper'
 
 function formatNow() {

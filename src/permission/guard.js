@@ -1,3 +1,12 @@
+/**
+ * 学习注释：
+ * 1. 文件角色：这是路由权限守卫文件，项目每次页面跳转前都会先经过这里判断是否需要登录、是否有权限。
+ * 2. 所在分层：权限控制层。
+ * 3. 当前文件主要依赖：app/user/permission/tabs 四个 store、语言路径解析、权限路由装配工具。
+ * 4. 当前文件对外暴露：setupPermissionGuard(router)。
+ * 5. 常见上游调用方：src/plugins/index.js。
+ * 6. 阅读建议：按“未登录”“已登录但权限未恢复”“已恢复权限后正常放行”三种场景阅读最清楚。
+ */
 import { ElMessage } from 'element-plus'
 
 import pinia from '@/store'
@@ -62,6 +71,7 @@ export function setupPermissionGuard(router) {
     }
 
     try {
+      // 刷新页面后常见的状态是“token 还在，但用户信息还没恢复完整”。
       if (!userStore.userInfo.username) {
         const userInfo = await userStore.fetchUserInfoAction()
         permissionStore.setPermissionCodeList(userInfo.permissionCodeList || [])

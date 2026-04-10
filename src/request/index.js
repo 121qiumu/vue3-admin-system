@@ -1,3 +1,12 @@
+/**
+ * 学习注释：
+ * 1. 文件角色：这是统一请求实例文件，负责创建 axios 实例，并集中处理 token、业务码、HTTP 异常。
+ * 2. 所在分层：请求基础设施层。
+ * 3. 当前文件主要依赖：axios、状态码常量、请求辅助方法、Element Plus 消息提示。
+ * 4. 当前文件对外暴露：request、getRequest、postRequest、putRequest、deleteRequest。
+ * 5. 常见上游调用方：src/api 目录下所有接口文件、src/utils/request.js。
+ * 6. 阅读建议：按“创建实例 -> 请求拦截器 -> 响应拦截器 -> 导出常用方法”这个顺序阅读。
+ */
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
@@ -16,17 +25,11 @@ import {
   shouldReturnRawResponse
 } from './helper'
 
-// 创建统一的 axios 实例。
-// 后续整个项目只要是“真实接口请求”，都建议走这一份实例。
 const request = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 10000
 })
 
-// 请求拦截器。
-// 这里主要做两件事：
-// 1. 统一补充 token
-// 2. 统一保留请求扩展位，方便后续加租户信息、语言标识等头部
 request.interceptors.request.use(
   (config) => {
     const nextConfig = { ...config }
@@ -36,14 +39,11 @@ request.interceptors.request.use(
       nextConfig.headers = {}
     }
 
-    // 默认自动携带 token。
-    // 如果某个接口明确不需要 token，可以在业务层传 isToken: false 关闭它。
     if (accessToken && nextConfig.headers.isToken !== false) {
       nextConfig.headers.Authorization = `Bearer ${accessToken}`
     }
 
-    // 这个自定义字段只是给前端拦截器自己用，
-    // 不需要真的发给后端，所以这里顺手删掉，避免污染请求头。
+    // isToken 是前端自定义控制字段，不应该真正发给后端。
     if ('isToken' in nextConfig.headers) {
       delete nextConfig.headers.isToken
     }
@@ -55,11 +55,6 @@ request.interceptors.request.use(
   }
 )
 
-// 响应拦截器。
-// 这里统一处理 3 类情况：
-// 1. 文件下载等需要原样返回的响应
-// 2. 正常 JSON 业务响应
-// 3. HTTP 层异常和 token 失效
 request.interceptors.response.use(
   async (response) => {
     if (shouldReturnRawResponse(response.config)) {
@@ -68,8 +63,6 @@ request.interceptors.response.use(
 
     const responseData = response.data
 
-    // 如果后端没有返回 code 字段，就按“普通 JSON 数据”直接返回。
-    // 这样可以兼容一些简单接口，避免为了统一格式强行包一层。
     if (!responseData || typeof responseData !== 'object' || !('code' in responseData)) {
       return responseData
     }
@@ -88,7 +81,6 @@ request.interceptors.response.use(
     const responseStatus = error.response?.status
     const responseData = error.response?.data || {}
 
-    // 网络断开、接口服务没启动、跨域失败这类场景，通常拿不到 response。
     if (!responseStatus) {
       const message = '网络异常，请检查本地服务或接口连接'
       ElMessage.error(message)
@@ -117,9 +109,6 @@ request.interceptors.response.use(
   }
 )
 
-// 下面这些是最常用的 4 个请求方法。
-// 虽然 axios 实例本身已经自带 get/post/put/delete，
-// 但这里再单独导出一层，能让学习者更容易理解参数该怎么传。
 export function getRequest(url, params = {}, config = {}) {
   return request.get(url, {
     ...config,

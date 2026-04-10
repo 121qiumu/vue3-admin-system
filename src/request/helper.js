@@ -1,3 +1,12 @@
+/**
+ * 学习注释：
+ * 1. 文件角色：这是请求层辅助方法文件，负责登录失效跳转、错误文案整理、服务器异常处理等边界逻辑。
+ * 2. 所在分层：请求基础设施层。
+ * 3. 当前文件主要依赖：router、user/tabs store、权限清理、国际化文案、HTTP 状态码常量。
+ * 4. 当前文件对外暴露：getAccessToken、handleUnauthorized、getResponseMessage、getHttpStatusMessage、shouldReturnRawResponse、handleServerException、handleBusinessErrorCode。
+ * 5. 常见上游调用方：src/request/index.js。
+ * 6. 阅读建议：把它理解成“请求层的收尾工具箱”，专门处理各种异常场景。
+ */
 import { ElMessage } from 'element-plus'
 
 import router from '@/router'

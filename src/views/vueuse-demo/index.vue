@@ -68,6 +68,13 @@
 </template>
 
 <script setup>
+// 学习注释：
+// 1. 文件角色：这是 VueUse 学习演示页，用来集中展示多个常用 VueUse API 的实际效果。
+// 2. 所在分层：页面层：真正承载业务展示和用户操作的界面。
+// 3. 当前组件主要依赖：{ apiCategoryList, learningStepList } <- src/views/vueuse-demo/api-catalog.js；UseAsyncStateDemo <- src/views/vueuse-demo/components/UseAsyncStateDemo.vue；UseClipboardDemo <- src/views/vueuse-demo/components/UseClipboardDemo.vue；UseDebounceFnDemo <- src/views/vueuse-demo/components/UseDebounceFnDemo.vue；UseElementSizeDemo <- src/views/vueuse-demo/components/UseElementSizeDemo.vue；UseLocalStorageDemo <- src/views/vueuse-demo/components/UseLocalStorageDemo.vue；其余依赖 2 项
+// 4. 对外暴露方式：当前文件会作为一个 Vue 组件被路由或父组件加载，不需要手写 export default。
+// 5. 常见上游调用方：当前暂时没有扫描到项目内其他源码文件直接引用它，或者它主要通过运行时约定被使用。
+// 6. 阅读建议：建议先看 template 知道页面长什么样，再看 script 里的数据来源和事件，最后再看样式。
 defineOptions({
   name: 'VueUseDemoPage'
 })

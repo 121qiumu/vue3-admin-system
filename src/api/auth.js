@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是认证相关接口封装文件，主要负责登录、获取用户信息、退出登录等请求。
+ * 2. 所在分层：接口调用层：把业务接口按模块组织，供页面直接调用。
+ * 3. 当前文件主要依赖：request <- src/request/index.js；{ createMockRequest, isMockEnabled } <- src/mock/index.js；{ mockGetUserInfo, mockLogin, mockLoginAccountList, mockLogout } <- src/mock/modules/auth.js
+ * 4. 当前文件对外暴露：命名导出：loginApi、getUserInfoApi、logoutApi、getLoginAccountListApi
+ * 5. 常见上游调用方：src/store/modules/user.js、src/views/login/index.vue
+ * 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
+ */
 import request from '@/request'
 import { createMockRequest, isMockEnabled } from '@/mock'
 import { mockGetUserInfo, mockLogin, mockLoginAccountList, mockLogout } from '@/mock/modules/auth'

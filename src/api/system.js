@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是系统管理模块接口封装文件，用户、角色、菜单等页面都通过这里请求数据。
+ * 2. 所在分层：接口调用层：把业务接口按模块组织，供页面直接调用。
+ * 3. 当前文件主要依赖：request <- src/request/index.js；{ createMockRequest, isMockEnabled } <- src/mock/index.js；{ mockDeleteMenu, mockDeleteRole, mockDeleteUser, mockGetMenuDetail, mockGetMenuPage, mockGetMenuParentOptionList, mockGetRoleDetail, mockGetRoleOptionList, mockGetRolePage, mockGetUserDetail, mockGetUserPage, mockSaveMenu, mockSaveRole, mockSaveUser } <- src/mock/modules/system.js
+ * 4. 当前文件对外暴露：命名导出：getUserPageApi、getUserDetailApi、saveUserApi、deleteUserApi、getRolePageApi、getRoleDetailApi、saveRoleApi、deleteRoleApi、getMenuPageApi、getMenuDetailApi、saveMenuApi、deleteMenuApi、getRoleOptionListApi、getMenuParentOptionListApi
+ * 5. 常见上游调用方：src/views/system/menu/detail.vue、src/views/system/menu/form.vue、src/views/system/menu/index.vue、src/views/system/role/detail.vue、src/views/system/role/form.vue、src/views/system/role/index.vue 等，共 9 个上游引用文件
+ * 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
+ */
 import request from '@/request'
 import { createMockRequest, isMockEnabled } from '@/mock'
 import {

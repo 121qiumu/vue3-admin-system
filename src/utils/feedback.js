@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是用户反馈工具文件，通常用来统一弹窗、提示、确认框等交互反馈。
+ * 2. 所在分层：工具层：放通用函数，避免重复写基础逻辑。
+ * 3. 当前文件主要依赖：{ h } <- vue；{ ElMessage } <- element-plus；{ translate } <- src/locales/helper.js
+ * 4. 当前文件对外暴露：命名导出：showAuthMessage
+ * 5. 常见上游调用方：src/layout/components/LayoutHeader.vue、src/views/login/index.vue
+ * 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
+ */
 import { h } from 'vue'
 import { ElMessage } from 'element-plus'
 

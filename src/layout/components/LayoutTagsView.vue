@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="layout-tags-view">
     <el-scrollbar class="layout-tags-view__scrollbar">
       <div class="layout-tags-view__list">
@@ -42,6 +42,13 @@
 </template>
 
 <script setup>
+// 学习注释：
+// 1. 文件角色：这是布局子组件文件，属于后台框架壳的一部分，比如 Logo、菜单、面包屑、标签栏、头部工具区。
+// 2. 所在分层：布局壳层：负责后台整体骨架结构。
+// 3. 当前组件主要依赖：{ computed, watch } <- vue；{ useI18n } <- vue-i18n；{ useRoute, useRouter } <- vue-router；{ useLocale } <- src/hooks/useLocale.js；{ useTagsView } <- src/hooks/useTagsView.js；{ getBaseRoutePath } <- src/locales/resolve.js
+// 4. 对外暴露方式：当前文件会作为一个 Vue 组件被路由或父组件加载，不需要手写 export default。
+// 5. 常见上游调用方：src/layout/modes/LeftLayout.vue、src/layout/modes/MixLayout.vue、src/layout/modes/TopLayout.vue
+// 6. 阅读建议：建议先看 template 结构，再看 props/computed，最后结合 hook 和 store 理解布局联动。
 import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'

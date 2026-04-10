@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-menu
     :default-active="activePath"
     mode="horizontal"
@@ -21,6 +21,13 @@
 </template>
 
 <script setup>
+// 学习注释：
+// 1. 文件角色：这是布局子组件文件，属于后台框架壳的一部分，比如 Logo、菜单、面包屑、标签栏、头部工具区。
+// 2. 所在分层：布局壳层：负责后台整体骨架结构。
+// 3. 当前组件主要依赖：{ useRouter } <- vue-router；AppIcon <- src/components/common/AppIcon.vue；{ useLocale } <- src/hooks/useLocale.js；{ getMetaTitle } <- src/locales/helper.js
+// 4. 对外暴露方式：当前文件会作为一个 Vue 组件被路由或父组件加载，不需要手写 export default。
+// 5. 常见上游调用方：src/layout/modes/MixLayout.vue
+// 6. 阅读建议：建议先看 template 结构，再看 props/computed，最后结合 hook 和 store 理解布局联动。
 import { useRouter } from 'vue-router'
 
 import AppIcon from '@/components/common/AppIcon.vue'

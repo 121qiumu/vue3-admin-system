@@ -1,4 +1,13 @@
-﻿import { DARK_THEME_LIST, DEFAULT_THEME, THEME_VALUES } from '@/constants/theme'
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是主题处理工具文件，负责校验主题值并把主题同步到 DOM。
+ * 2. 所在分层：工具层：放通用函数，避免重复写基础逻辑。
+ * 3. 当前文件主要依赖：{ DARK_THEME_LIST, DEFAULT_THEME, THEME_VALUES } <- src/constants/theme.js
+ * 4. 当前文件对外暴露：命名导出：isValidTheme、mountThemeToDom、applyTheme
+ * 5. 常见上游调用方：src/store/modules/app.js
+ * 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
+ */
+import { DARK_THEME_LIST, DEFAULT_THEME, THEME_VALUES } from '@/constants/theme'
 
 // 判断当前是否运行在浏览器环境。
 function isClient() {

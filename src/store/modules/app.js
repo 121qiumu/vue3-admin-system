@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是应用级 store，主要管理主题、语言、布局、侧边栏、设备类型等全局 UI 状态。
+ * 2. 所在分层：状态管理层：保存跨页面共享的数据状态。
+ * 3. 当前文件主要依赖：{ computed, ref } <- vue；{ defineStore } <- pinia；{ DEFAULT_LAYOUT_MODE, DEVICE_TYPE_ENUM, LAYOUT_MOBILE_BREAKPOINT, LAYOUT_MODE_ENUM } <- src/constants/layout.js；{ DEFAULT_LOCALE } <- src/constants/locale.js；{ APP_STORAGE_KEY } <- src/constants/storage.js；{ DEFAULT_THEME } <- src/constants/theme.js；其余依赖 4 项
+ * 4. 当前文件对外暴露：命名导出：useAppStore
+ * 5. 常见上游调用方：src/hooks/useLayout.js、src/hooks/useLocale.js、src/hooks/useTheme.js、src/permission/guard.js、src/store/index.js
+ * 6. 阅读建议：建议按“state -> computed -> action -> 持久化/恢复”这个顺序阅读。
+ */
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 

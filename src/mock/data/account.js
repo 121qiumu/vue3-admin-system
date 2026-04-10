@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是 mock 原始数据文件，主要提供数组、对象等静态演示数据。
+ * 2. 所在分层：本地模拟数据层：在没有真实后端时提供演示数据。
+ * 3. 当前文件主要依赖：{ adminAsyncMenuList, editorAsyncMenuList } <- src/mock/data/menu.js
+ * 4. 当前文件对外暴露：命名导出：getMockAccountList、findMockAccountByLogin、findMockAccountByToken、getMockLoginAccountList
+ * 5. 常见上游调用方：src/mock/modules/auth.js、src/mock/modules/dashboard.js、src/mock/modules/permission.js
+ * 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
+ */
 import { adminAsyncMenuList, editorAsyncMenuList } from './menu'
 
 // 统一维护 mock 用户数据。

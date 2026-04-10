@@ -49,6 +49,13 @@
 </template>
 
 <script setup>
+// 学习注释：
+// 1. 文件角色：这是某个 VueUse API 的独立演示组件，方便你分开理解每个 API 的作用。
+// 2. 所在分层：页面层：真正承载业务展示和用户操作的界面。
+// 3. 当前组件主要依赖：{ computed, onMounted, ref } <- vue；{ useAsyncState } <- @vueuse/core；VueUseDemoCard <- src/views/vueuse-demo/components/VueUseDemoCard.vue
+// 4. 对外暴露方式：当前文件会作为一个 Vue 组件被路由或父组件加载，不需要手写 export default。
+// 5. 常见上游调用方：src/views/vueuse-demo/index.vue
+// 6. 阅读建议：建议先看 template 知道页面长什么样，再看 script 里的数据来源和事件，最后再看样式。
 import { computed, onMounted, ref } from 'vue'
 import { useAsyncState } from '@vueuse/core'
 

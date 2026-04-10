@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是标签页 store，主要负责已访问页面、缓存页面以及标签栏的增删改。
+ * 2. 所在分层：状态管理层：保存跨页面共享的数据状态。
+ * 3. 当前文件主要依赖：{ ref } <- vue；{ defineStore } <- pinia；{ getRouteTitle, translate } <- src/locales/helper.js；{ getBaseRoutePath } <- src/locales/resolve.js；{ staticAffixTagList } <- src/router/modules/static.js；{ TABS_STORAGE_KEY } <- src/constants/storage.js；其余依赖 1 项
+ * 4. 当前文件对外暴露：命名导出：useTabsStore
+ * 5. 常见上游调用方：src/hooks/useTagsView.js、src/layout/components/LayoutHeader.vue、src/permission/guard.js、src/request/helper.js、src/store/index.js、src/views/login/index.vue
+ * 6. 阅读建议：建议按“state -> computed -> action -> 持久化/恢复”这个顺序阅读。
+ */
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 

@@ -1,3 +1,12 @@
+/**
+ * 学习注释：
+ * 1. 文件角色：这是语言路径解析工具文件，主要解决“语言前缀在 URL 中怎么取、怎么补、怎么移除”的问题。
+ * 2. 所在分层：国际化层。
+ * 3. 当前文件主要依赖：语言常量、APP_STORAGE_KEY、本地存储工具。
+ * 4. 当前文件对外暴露：isSupportedLocale、normalizeLocale、getStoredLocale、getBrowserLocale、getPreferredLocale、stripLocalePrefix、removeLocaleParamPrefix、getBaseRoutePath、resolveLocalePath、getLocaleFromRouteLike。
+ * 5. 常见上游调用方：router 模块、权限守卫、国际化 hook、布局菜单逻辑。
+ * 6. 阅读建议：先理解“路径去语言前缀”和“路径补语言前缀”，再看路由守卫和菜单为什么都依赖这里。
+ */
 import { APP_STORAGE_KEY } from '@/constants/storage'
 import {
   DEFAULT_LOCALE,
@@ -21,7 +30,7 @@ function normalizePathname(pathname = '') {
   }
 
   const normalizedPath = pathname.startsWith('/') ? pathname : `/${pathname}`
-  const compactPath = normalizedPath.replace(/\/+/g, '/').replace(/\/$/, '')
+  const compactPath = normalizedPath.replace(/\/+?/g, '/').replace(/\/$/, '')
   return compactPath || '/'
 }
 

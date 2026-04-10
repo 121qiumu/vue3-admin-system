@@ -59,6 +59,13 @@
 </template>
 
 <script setup>
+// 学习注释：
+// 1. 文件角色：这是某个 VueUse API 的独立演示组件，方便你分开理解每个 API 的作用。
+// 2. 所在分层：页面层：真正承载业务展示和用户操作的界面。
+// 3. 当前组件主要依赖：当前文件没有显式导入项目内其他源码模块，或者只依赖运行环境与框架默认能力。
+// 4. 对外暴露方式：当前文件会作为一个 Vue 组件被路由或父组件加载，不需要手写 export default。
+// 5. 常见上游调用方：src/views/vueuse-demo/components/UseAsyncStateDemo.vue、src/views/vueuse-demo/components/UseClipboardDemo.vue、src/views/vueuse-demo/components/UseDebounceFnDemo.vue、src/views/vueuse-demo/components/UseElementSizeDemo.vue、src/views/vueuse-demo/components/UseLocalStorageDemo.vue、src/views/vueuse-demo/components/UseMouseDemo.vue 等，共 7 个上游引用文件
+// 6. 阅读建议：建议先看 template 知道页面长什么样，再看 script 里的数据来源和事件，最后再看样式。
 defineProps({
   title: {
     type: String,

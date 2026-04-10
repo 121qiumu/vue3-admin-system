@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="list-page-template">
     <el-card v-if="$slots.query" shadow="never" class="list-page-template__query-card">
       <div class="list-page-template__query-body">
@@ -41,6 +41,13 @@
 </template>
 
 <script setup>
+// 学习注释：
+// 1. 文件角色：这是通用业务模板组件，用来减少列表页、表单页、详情页这些重复页面结构的样板代码。
+// 2. 所在分层：通用组件层：页面之间共享的可复用组件。
+// 3. 当前组件主要依赖：{ computed } <- vue
+// 4. 对外暴露方式：当前文件会作为一个 Vue 组件被路由或父组件加载，不需要手写 export default。
+// 5. 常见上游调用方：src/views/system/menu/index.vue、src/views/system/role/index.vue、src/views/system/user/index.vue
+// 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
 import { computed } from 'vue'
 
 const props = defineProps({

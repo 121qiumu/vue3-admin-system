@@ -1,11 +1,16 @@
+/**
+ * 学习注释：
+ * 1. 文件角色：这是权限路由装配入口，负责把权限 store 生成出来的动态路由真正注入到 Vue Router。
+ * 2. 所在分层：权限控制层。
+ * 3. 当前文件主要依赖：pinia、router、permission store。
+ * 4. 当前文件对外暴露：setupPermissionRoutes、rebuildPermissionRoutes、clearPermissionRoutes。
+ * 5. 常见上游调用方：plugins/index.js、permission/guard.js、request/helper.js。
+ * 6. 阅读建议：把它看成“store 里的权限结果”和“router 里的真实路由实例”之间的桥梁。
+ */
 import pinia from '@/store'
 import { addDynamicRoutes, resetRouter } from '@/router'
 import { usePermissionStore } from '@/store/modules/permission'
 
-// 初始化权限路由。
-// 这个方法常见的调用时机有两个：
-// 1. 登录成功后，拿到用户权限码之后
-// 2. 页面刷新后，从本地缓存恢复权限码之后
 export function setupPermissionRoutes() {
   const permissionStore = usePermissionStore(pinia)
 
@@ -13,8 +18,6 @@ export function setupPermissionRoutes() {
     return permissionStore.accessibleRouteList
   }
 
-  // 先基于当前权限数据生成可访问的动态路由列表。
-  // 生成完成后，再统一通过 router.addRoute 注入到应用中。
   const accessibleRouteList = permissionStore.generatePermissionState()
 
   if (accessibleRouteList.length > 0) {
@@ -26,10 +29,6 @@ export function setupPermissionRoutes() {
   return accessibleRouteList
 }
 
-// 重建权限路由。
-// 常见场景：
-// 1. 登录成功后首次注入动态路由
-// 2. 切换账号后按新权限重新生成路由
 export function rebuildPermissionRoutes() {
   const permissionStore = usePermissionStore(pinia)
 
@@ -39,8 +38,6 @@ export function rebuildPermissionRoutes() {
   return setupPermissionRoutes()
 }
 
-// 清空权限路由。
-// 常见场景：退出登录后把动态路由和权限菜单一并清掉。
 export function clearPermissionRoutes() {
   const permissionStore = usePermissionStore(pinia)
 

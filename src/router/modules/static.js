@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是静态路由清单，项目启动时就会注册这些页面，比如登录页、首页、错误页。
+ * 2. 所在分层：路由层：定义页面访问路径、菜单来源、动态路由装配规则。
+ * 3. 当前文件主要依赖：{ DEFAULT_LOCALE, LOCALE_ROUTE_PARAM } <- src/constants/locale.js；{ getBaseRoutePath, getPreferredLocale, resolveLocalePath } <- src/locales/resolve.js；{ Layout, resolveRoutePath, transformRoutesToMenu } <- src/router/helper.js
+ * 4. 当前文件对外暴露：命名导出：rootRedirectRoute、loginRoute、layoutRoute、forbiddenRoute、serverErrorRoute、notFoundRoute、localizedCatchAllRoute、catchAllRoute、staticRoutes、whiteRoutePathList、staticMenuRoutes、staticAffixTagList
+ * 5. 常见上游调用方：src/permission/guard.js、src/router/index.js、src/store/modules/permission.js、src/store/modules/tabs.js
+ * 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
+ */
 import { DEFAULT_LOCALE, LOCALE_ROUTE_PARAM } from '@/constants/locale'
 import { getBaseRoutePath, getPreferredLocale, resolveLocalePath } from '@/locales/resolve'
 import { Layout, resolveRoutePath, transformRoutesToMenu } from '../helper'

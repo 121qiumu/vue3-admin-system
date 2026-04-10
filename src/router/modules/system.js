@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是某个业务模块的路由配置文件，负责声明该模块有哪些页面、菜单、权限码和跳转关系。
+ * 2. 所在分层：路由层：定义页面访问路径、菜单来源、动态路由装配规则。
+ * 3. 当前文件主要依赖：{ DEFAULT_LOCALE, LOCALE_ROUTE_PARAM } <- src/constants/locale.js；{ resolveLocalePath } <- src/locales/resolve.js；{ Layout } <- src/router/helper.js
+ * 4. 当前文件对外暴露：命名导出：systemRoute
+ * 5. 常见上游调用方：src/router/modules/async.js
+ * 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
+ */
 import { DEFAULT_LOCALE, LOCALE_ROUTE_PARAM } from '@/constants/locale'
 import { resolveLocalePath } from '@/locales/resolve'
 import { Layout } from '../helper'

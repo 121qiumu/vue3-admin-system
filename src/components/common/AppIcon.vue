@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <component
     :is="resolvedIconComponent"
     v-if="resolvedIconComponent"
@@ -10,6 +10,13 @@
 </template>
 
 <script setup>
+// 学习注释：
+// 1. 文件角色：这是全局可复用基础组件，多个页面都会直接或间接使用它。
+// 2. 所在分层：通用组件层：页面之间共享的可复用组件。
+// 3. 当前组件主要依赖：{ computed } <- vue；IconEpArrowDown <- ~icons/ep/arrow-down；IconEpBell <- ~icons/ep/bell；IconEpCheck <- ~icons/ep/check；IconEpCircleCheckFilled <- ~icons/ep/circle-check-filled；IconEpClose <- ~icons/ep/close；其余依赖 21 项
+// 4. 对外暴露方式：当前文件会作为一个 Vue 组件被路由或父组件加载，不需要手写 export default。
+// 5. 常见上游调用方：src/components/common/AppStatus.vue、src/layout/components/LayoutMenuItem.vue、src/layout/components/LayoutTopNav.vue、src/views/system/menu/form.vue、src/views/system/menu/index.vue
+// 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
 import { computed } from 'vue'
 
 import IconEpArrowDown from '~icons/ep/arrow-down'

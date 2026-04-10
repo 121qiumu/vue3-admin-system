@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <ListPageTemplate
     title="角色管理"
     description="角色管理页演示了统一列表模板如何承接不同的查询字段和表格列。"
@@ -84,6 +84,13 @@
 </template>
 
 <script setup>
+// 学习注释：
+// 1. 文件角色：这是系统管理模块的列表页入口，一般负责筛选条件、表格展示、跳转详情和新增编辑。
+// 2. 所在分层：页面层：真正承载业务展示和用户操作的界面。
+// 3. 当前组件主要依赖：{ onMounted, reactive, ref } <- vue；{ useRouter } <- vue-router；{ ElMessage, ElMessageBox } <- element-plus；ListPageTemplate <- src/components/common/business/ListPageTemplate.vue；{ deleteRoleApi, getRolePageApi } <- src/api/system.js
+// 4. 对外暴露方式：当前文件会作为一个 Vue 组件被路由或父组件加载，不需要手写 export default。
+// 5. 常见上游调用方：当前暂时没有扫描到项目内其他源码文件直接引用它，或者它主要通过运行时约定被使用。
+// 6. 阅读建议：建议先看 template 知道页面长什么样，再看 script 里的数据来源和事件，最后再看样式。
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'

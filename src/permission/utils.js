@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是权限通用工具文件，按钮权限、自定义指令、页面权限判断都会复用这里的基础方法。
+ * 2. 所在分层：权限控制层：登录校验、路由权限、按钮权限都在这里处理。
+ * 3. 当前文件主要依赖：pinia <- src/store/index.js；{ usePermissionStore } <- src/store/modules/permission.js
+ * 4. 当前文件对外暴露：命名导出：checkPermission、hasPermission、hasAnyPermission、hasRoutePermission、normalizePermissionBinding
+ * 5. 常见上游调用方：src/directives/permission.js、src/permission/guard.js
+ * 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
+ */
 import pinia from '@/store'
 import { usePermissionStore } from '@/store/modules/permission'
 

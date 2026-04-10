@@ -1,3 +1,12 @@
+﻿/**
+ * 学习注释：
+ * 1. 文件角色：这是路由辅助工具文件，主要把路由数据进一步加工成菜单、完整路径等更适合页面消费的结构。
+ * 2. 所在分层：路由层：定义页面访问路径、菜单来源、动态路由装配规则。
+ * 3. 当前文件主要依赖：{ getBaseRoutePath } <- src/locales/resolve.js
+ * 4. 当前文件对外暴露：命名导出：Layout、resolveRoutePath、transformRoutesToMenu
+ * 5. 常见上游调用方：src/router/modules/static.js、src/router/modules/system.js、src/store/modules/permission.js
+ * 6. 阅读建议：建议先看导入来源，再看当前文件导出的内容，这样最容易看懂它在项目中的位置。
+ */
 import { getBaseRoutePath } from '@/locales/resolve'
 
 // Layout 容器组件采用懒加载写法。

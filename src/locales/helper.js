@@ -1,3 +1,12 @@
+/**
+ * 学习注释：
+ * 1. 文件角色：这是国际化辅助工具文件，页面标题、语言切换、Element Plus 语言包映射都会用到这里。
+ * 2. 所在分层：国际化层。
+ * 3. 当前文件主要依赖：vue-i18n 实例、Day.js、Element Plus 语言包、语言路径解析工具。
+ * 4. 当前文件对外暴露：translate、getElementPlusLocale、applyAppLocale、getMetaTitle、getRouteTitle、getDocumentTitle、setDocumentTitleByRoute、getLocaleLabel、getRoleLabel、getMenuTypeLabel、getStatusLabel、syncLocaleByRoute。
+ * 5. 常见上游调用方：plugins/i18n.js、hooks/useLocale.js、多个页面和组件。
+ * 6. 阅读建议：先理解 translate 和 applyAppLocale，再看标题、标签、状态这些基于它们构建的便捷方法。
+ */
 import dayjs from 'dayjs'
 import elementEn from 'element-plus/es/locale/lang/en'
 import elementZhCn from 'element-plus/es/locale/lang/zh-cn'
@@ -34,6 +43,8 @@ export function getElementPlusLocale(locale = DEFAULT_LOCALE) {
   return ELEMENT_PLUS_LOCALE_MAP[normalizeLocale(locale)] || elementZhCn
 }
 
+// 应用语言到整个前端环境。
+// 它不仅会修改 vue-i18n 当前语言，还会同步 Day.js 和 document.lang。
 export function applyAppLocale(locale = DEFAULT_LOCALE) {
   const normalizedLocale = normalizeLocale(locale)
 
